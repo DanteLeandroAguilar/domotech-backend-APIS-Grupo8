@@ -6,13 +6,17 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.uade.tpo.demo.entity.Categoria;
+import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
 
 public interface CategoryService {
-    public Page<Categoria> getCategories(PageRequest pageRequest);
+    public Page<Category> getCategories(PageRequest pageRequest);
 
-    public Optional<Categoria> getCategoryById(Long categoryId);
+    public Optional<Category> getCategoryById(Long categoryId);
 
-    public Categoria createCategory(String description) throws CategoryDuplicateException;
+    public Category createCategory(String description) throws CategoryDuplicateException;
+
+    public Category updateCategory(Long categoryId, String description) throws CategoryDuplicateException;
+
+    public void deleteCategory(Long categoryId);
 }

@@ -4,14 +4,14 @@ import com.uade.tpo.demo.entity.Carrito;
 
 public interface CarritoService {
     
-    public Carrito crearCarrito(Long idUsuario);
+    public Carrito createCart(Long idUsuario);
 
-    public Carrito agregarProducto(Long idCarrito, Long idProducto, int cantidad);
+    public Carrito addProduct(Long idCarrito, Long idProducto, int cantidad);
 
-    public Carrito eliminarProducto(Long idCarrito, Long idProducto);
+    public Carrito deleteProduct(Long idCarrito, Long idProducto);
 
-    public Carrito vaciarCarrito(Long idCarrito);
+    public Carrito cleanCart(Long idCarrito);
 
-    public Carrito confirmarCarrito(Long idCarrito);
+    public Carrito confirmCart(Long idCarrito);
 
 }

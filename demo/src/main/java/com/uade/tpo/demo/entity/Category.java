@@ -14,25 +14,25 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "categorias")
-public class Categoria {
+public class Category {
     
-    public Categoria() {}
+    public Category() {}
 
-    public Categoria(String descripcion) {
-        this.descripcion = descripcion;
+    public Category(String description) {
+        this.description = description;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    private Long idCategoria;
+    private Long categoryId;
 
     @Column
-    private String nombre;
+    private String name;
 
     @Column
-    private String descripcion;
+    private String description;
 
     @OneToMany(mappedBy = "categoria")
-    private List<Producto> productos;
+    private List<Product> products;
 
 }
