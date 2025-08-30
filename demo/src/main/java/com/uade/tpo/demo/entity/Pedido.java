@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.uade.tpo.demo.entity.enums.EstadoPedido;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -35,11 +36,12 @@ public class Pedido {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaPedido = new Date();
 
+    @Column
     private Double total;
 
     @Enumerated(EnumType.STRING)
-    private EstadoPedido estado = EstadoPedido.PENDIENTE;
+    private EstadoPedido estadoPedido;
 
     @OneToMany(mappedBy = "pedido")
-    private List<DetallePedido> detalles;
+    private List<DetallePedido> detallesPedidos;
 }

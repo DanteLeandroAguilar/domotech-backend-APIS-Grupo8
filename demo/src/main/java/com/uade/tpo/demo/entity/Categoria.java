@@ -18,6 +18,10 @@ public class Categoria {
     
     public Categoria() {}
 
+    public Categoria(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long idCategoria;
