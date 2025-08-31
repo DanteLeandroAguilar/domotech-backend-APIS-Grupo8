@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.uade.tpo.demo.entity.Carrito;
 import com.uade.tpo.demo.entity.Categoria;
-import com.uade.tpo.demo.entity.Usuario;
+import com.uade.tpo.demo.entity.User;
 import com.uade.tpo.demo.repository.CarritoRepository;
 import com.uade.tpo.demo.repository.CategoryRepository;
-import com.uade.tpo.demo.repository.UsuarioRepository;
+import com.uade.tpo.demo.repository.UserRepository;
 
 @Service
 public class CarritoServiceImpl implements CarritoService {
@@ -20,14 +20,14 @@ public class CarritoServiceImpl implements CarritoService {
     private CarritoRepository carritoRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UserRepository usuarioRepository;
 
     
     public Carrito crearCarrito(Long idUsuario) {
-        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        User usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Carrito carrito = new Carrito();
-        carrito.setUsuario(usuario);
+        carrito.setUser(usuario);
         return carritoRepository.save(carrito);
     }
 
