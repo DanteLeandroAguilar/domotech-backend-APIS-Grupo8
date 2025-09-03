@@ -13,7 +13,7 @@ import com.uade.tpo.demo.repository.CategoryRepository;
 import com.uade.tpo.demo.repository.UsuarioRepository;
 
 @Service
-public class CarritoServiceImpl implements CarritoService {
+public class CartServiceImpl implements CartService {
 
 
     @Autowired

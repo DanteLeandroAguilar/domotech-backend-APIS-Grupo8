@@ -2,7 +2,7 @@ package com.uade.tpo.demo.service;
 
 import com.uade.tpo.demo.entity.Carrito;
 
-public interface CarritoService {
+public interface CartService {
     
     public Carrito createCart(Long idUsuario);
 

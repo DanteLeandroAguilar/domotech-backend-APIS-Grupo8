@@ -27,12 +27,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     // Crea una nueva categoría si no existe una con la misma descripción
-    public Category createCategory(String description) throws CategoryDuplicateException {
+    public Category createCategory(String name, String description) throws CategoryDuplicateException {
         // Busca si ya existe una categoría con la misma descripción
        if (!categoryRepository.findByDescription(description).isEmpty()) {
             throw new CategoryDuplicateException();
         }
-        Category category = new Category(description);
+        Category category = new Category(name, description);
         return categoryRepository.save(category);
     }
 

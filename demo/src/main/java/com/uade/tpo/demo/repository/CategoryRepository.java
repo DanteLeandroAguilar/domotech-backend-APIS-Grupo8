@@ -12,7 +12,7 @@ import com.uade.tpo.demo.entity.Category;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     // Devuelve una lista de categorías que coinciden con el nombre dado
-    @Query(value = "SELECT c FROM Categoria c WHERE c.description = ?1")
+    @Query(value = "SELECT c FROM Category c WHERE c.description = ?1")
     List<Category> findByDescription(String description);
 
     // Busca categorías por nombre exacto
