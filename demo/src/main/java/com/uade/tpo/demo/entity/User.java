@@ -50,13 +50,8 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP) 
     private Date registrationDate = new Date();
 
-<<<<<<< HEAD:demo/src/main/java/com/uade/tpo/demo/entity/Usuario.java
-    @OneToMany(mappedBy = "usuario")
-    private List<Cart> carts;
-=======
     @OneToMany(mappedBy = "user")
-    private List<Carrito> carts;
->>>>>>> d0798b6b797e56dcdc0695cfb93c9e8fa7be55ac:demo/src/main/java/com/uade/tpo/demo/entity/User.java
+    private List<Cart> carts;
 
     @OneToMany(mappedBy = "user")
     private List<Pedido> orders;
