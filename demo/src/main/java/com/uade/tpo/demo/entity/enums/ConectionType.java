@@ -1,6 +1,6 @@
 package com.uade.tpo.demo.entity.enums;
 
-public enum TipoConexion {
+public enum ConectionType {
     WIFI,
     ZIGBEE,
     BLUETOOTH,

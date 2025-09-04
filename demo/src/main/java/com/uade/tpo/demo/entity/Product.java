@@ -3,7 +3,7 @@ package com.uade.tpo.demo.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.uade.tpo.demo.entity.enums.TipoConexion;
+import com.uade.tpo.demo.entity.enums.ConectionType;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,45 +21,45 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "productos")
+@Table(name = "products")
 public class Product {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    private Long idProducto;
+    private Long productId;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria", nullable = false)
-    private Category categoria;
+    @JoinColumn(name = "categoryId", nullable = false)
+    private Category category;
 
-    private String nombre;
+    private String name;
 
-    private String descripcion;
+    private String description;
 
-    private Double precio;
+    private Double price;
 
     private Integer stock;
 
-    private Double descuentoPorcentaje;
+    private Double discount; // Porcentaje de descuento
 
     @Temporal(TemporalType.TIMESTAMP) 
-    private Date fechaCreacion = new Date();
+    private Date creationDate = new Date();
 
-    private Boolean activo;
+    private Boolean active;
 
-    private String marca;
+    private String brand;
 
-    private String compatibilidad;
+    private String compatibility;
 
     @Enumerated(EnumType.STRING)
-    private TipoConexion tipoConexion;
+    private ConectionType conectionType;
 
-    @OneToMany(mappedBy = "producto")
+    @OneToMany(mappedBy = "product")
     private List<ImagenProducto> imagenes;
 
-    @OneToMany(mappedBy = "producto")
+    @OneToMany(mappedBy = "product")
     private List<CartItem> carritoItems;
 
-    @OneToMany(mappedBy = "producto")
+    @OneToMany(mappedBy = "product")
     private List<DetallePedido> detallePedidos;
 }

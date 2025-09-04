@@ -3,7 +3,7 @@ package com.uade.tpo.demo.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.uade.tpo.demo.entity.enums.EstadoPedido;
+import com.uade.tpo.demo.entity.enums.OrderStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,7 +43,7 @@ public class Pedido {
     private Double total;
 
     @Enumerated(EnumType.STRING)
-    private EstadoPedido estadoPedido;
+    private OrderStatus estadoPedido;
 
     @OneToMany(mappedBy = "pedido")
     private List<DetallePedido> detallesPedidos;

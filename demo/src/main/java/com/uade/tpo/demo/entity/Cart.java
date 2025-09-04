@@ -19,7 +19,7 @@ import lombok.Setter;
 
 @Entity
 @Data
-@Table(name = "carritos")
+@Table(name = "carts")
 public class Cart {
     
     @Id
@@ -27,7 +27,7 @@ public class Cart {
     private Long cartId;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     @Getter @Setter
     private User user;
 
@@ -36,6 +36,6 @@ public class Cart {
 
     private Boolean active = true;
 
-    @OneToMany(mappedBy = "carrito")
+    @OneToMany(mappedBy = "cart")
     private List<CartItem> items;
 }

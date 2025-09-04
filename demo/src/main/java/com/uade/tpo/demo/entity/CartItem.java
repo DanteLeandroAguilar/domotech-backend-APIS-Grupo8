@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "carrito_items")
+@Table(name = "cartItems")
 public class CartItem {
     
     @Id
@@ -20,11 +20,11 @@ public class CartItem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_carrito", nullable = false)
+    @JoinColumn(name = "cartId", nullable = false)
     private Cart cart;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
+    @JoinColumn(name = "productId", nullable = false)
     private Product product;
 
     @Column
