@@ -1,7 +1,7 @@
 package com.uade.tpo.demo.service;
 
-import com.uade.tpo.demo.entity.ImagenProducto;
-import com.uade.tpo.demo.entity.Producto;
+import com.uade.tpo.demo.entity.ProductImage;
+import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.repository.ImagenProductoRepository;
 import com.uade.tpo.demo.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,26 +25,26 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
     private ProductoRepository productoRepository;
     
     @Override
-    public ImagenProducto uploadImage(MultipartFile file, Long productId, Boolean isPrincipal) throws IOException {
+    public ProductImage uploadImage(MultipartFile file, Long productId, Boolean isPrincipal) throws IOException {
         // Find the product
-        Optional<Producto> productOpt = productoRepository.findById(productId);
+        Optional<Product> productOpt = productoRepository.findById(productId);
         if (!productOpt.isPresent()) {
             throw new RuntimeException("Product not found with ID: " + productId);
         }
         
-        Producto product = productOpt.get();
+        Product product = productOpt.get();
         
         // If this image will be principal, unmark others as principal
         if (isPrincipal != null && isPrincipal) {
-            List<ImagenProducto> existingImages = imagenProductoRepository.findByProduct(product);
-            for (ImagenProducto img : existingImages) {
+            List<ProductImage> existingImages = imagenProductoRepository.findByProduct(product);
+            for (ProductImage img : existingImages) {
                 img.setIsPrincipal(false);
                 imagenProductoRepository.save(img);
             }
         }
         
         // Create new image
-        ImagenProducto newImage = new ImagenProducto();
+        ProductImage newImage = new ProductImage();
         newImage.setProduct(product);
         newImage.setIsPrincipal(isPrincipal != null ? isPrincipal : false);
         
@@ -60,14 +60,14 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
     }
     
     @Override
-    public ImagenProducto getImageById(Long id) {
+    public ProductImage getImageById(Long id) {
         return imagenProductoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Image not found with ID: " + id));
     }
     
     @Override
-    public List<ImagenProducto> getImagesByProduct(Long productId) {
-        Optional<Producto> productOpt = productoRepository.findById(productId);
+    public List<ProductImage> getImagesByProduct(Long productId) {
+        Optional<Product> productOpt = productoRepository.findById(productId);
         if (!productOpt.isPresent()) {
             throw new RuntimeException("Product not found with ID: " + productId);
         }
@@ -76,8 +76,8 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
     }
     
     @Override
-    public ImagenProducto getPrincipalImage(Long productId) {
-        Optional<Producto> productOpt = productoRepository.findById(productId);
+    public ProductImage getPrincipalImage(Long productId) {
+        Optional<Product> productOpt = productoRepository.findById(productId);
         if (!productOpt.isPresent()) {
             throw new RuntimeException("Product not found with ID: " + productId);
         }
@@ -86,12 +86,12 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
     }
     
     @Override
-    public ImagenProducto markAsPrincipal(Long imageId) {
-        ImagenProducto image = getImageById(imageId);
+    public ProductImage markAsPrincipal(Long imageId) {
+        ProductImage image = getImageById(imageId);
         
         // Unmark all images from same product as principal
-        List<ImagenProducto> productImages = imagenProductoRepository.findByProduct(image.getProduct());
-        for (ImagenProducto img : productImages) {
+        List<ProductImage> productImages = imagenProductoRepository.findByProduct(image.getProduct());
+        for (ProductImage img : productImages) {
             img.setIsPrincipal(false);
             imagenProductoRepository.save(img);
         }
@@ -103,7 +103,7 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
     
     @Override
     public void deleteImage(Long id) {
-        ImagenProducto image = getImageById(id);
+        ProductImage image = getImageById(id);
         imagenProductoRepository.delete(image);
     }
 }

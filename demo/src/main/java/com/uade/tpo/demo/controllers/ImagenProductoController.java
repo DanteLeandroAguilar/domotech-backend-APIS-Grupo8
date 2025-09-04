@@ -1,6 +1,6 @@
 package com.uade.tpo.demo.controllers;
 
-import com.uade.tpo.demo.entity.ImagenProducto;
+import com.uade.tpo.demo.entity.ProductImage;
 import com.uade.tpo.demo.service.ImagenProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,13 +29,13 @@ public class ImagenProductoController {
      * POST /api/productos/{productId}/images
      */
     @PostMapping("/productos/{productId}/images")
-    public ResponseEntity<ImagenProducto> uploadImage(
+    public ResponseEntity<ProductImage> uploadImage(
             @PathVariable Long productId,
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "isPrincipal", defaultValue = "false") Boolean isPrincipal) {
         
         try {
-            ImagenProducto savedImage = imagenProductoService.uploadImage(file, productId, isPrincipal);
+            ProductImage savedImage = imagenProductoService.uploadImage(file, productId, isPrincipal);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedImage);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -49,9 +49,9 @@ public class ImagenProductoController {
      * GET /api/productos/{productId}/images
      */
     @GetMapping("/productos/{productId}/images")
-    public ResponseEntity<List<ImagenProducto>> getProductImages(@PathVariable Long productId) {
+    public ResponseEntity<List<ProductImage>> getProductImages(@PathVariable Long productId) {
         try {
-            List<ImagenProducto> images = imagenProductoService.getImagesByProduct(productId);
+            List<ProductImage> images = imagenProductoService.getImagesByProduct(productId);
             return ResponseEntity.ok(images);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -63,9 +63,9 @@ public class ImagenProductoController {
      * GET /api/productos/{productId}/images/principal
      */
     @GetMapping("/productos/{productId}/images/principal")
-    public ResponseEntity<ImagenProducto> getPrincipalImage(@PathVariable Long productId) {
+    public ResponseEntity<ProductImage> getPrincipalImage(@PathVariable Long productId) {
         try {
-            ImagenProducto principalImage = imagenProductoService.getPrincipalImage(productId);
+            ProductImage principalImage = imagenProductoService.getPrincipalImage(productId);
             if (principalImage != null) {
                 return ResponseEntity.ok(principalImage);
             } else {
@@ -83,7 +83,7 @@ public class ImagenProductoController {
     @GetMapping("/images/{imageId}")
     public ResponseEntity<byte[]> getImage(@PathVariable Long imageId) {
         try {
-            ImagenProducto image = imagenProductoService.getImageById(imageId);
+            ProductImage image = imagenProductoService.getImageById(imageId);
             
             if (image.getImageBlob() != null) {
                 Blob blob = image.getImageBlob();
@@ -99,7 +99,7 @@ public class ImagenProductoController {
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-        } catch (SQLException | SerialException e) {
+        } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -111,9 +111,9 @@ public class ImagenProductoController {
      * PUT /api/images/{imageId}/principal
      */
     @PutMapping("/images/{imageId}/principal")
-    public ResponseEntity<ImagenProducto> markAsPrincipal(@PathVariable Long imageId) {
+    public ResponseEntity<ProductImage> markAsPrincipal(@PathVariable Long imageId) {
         try {
-            ImagenProducto updatedImage = imagenProductoService.markAsPrincipal(imageId);
+            ProductImage updatedImage = imagenProductoService.markAsPrincipal(imageId);
             return ResponseEntity.ok(updatedImage);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

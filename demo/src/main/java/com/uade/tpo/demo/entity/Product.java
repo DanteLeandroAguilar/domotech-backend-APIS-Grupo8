@@ -55,11 +55,11 @@ public class Product {
     private ConectionType conectionType;
 
     @OneToMany(mappedBy = "product")
-    private List<ImagenProducto> imagenes;
+    private List<ProductImage> imagenes;
 
     @OneToMany(mappedBy = "product")
     private List<CartItem> carritoItems;
 
     @OneToMany(mappedBy = "product")
-    private List<DetallePedido> detallePedidos;
+    private List<OrderDetail> detallePedidos;
 }

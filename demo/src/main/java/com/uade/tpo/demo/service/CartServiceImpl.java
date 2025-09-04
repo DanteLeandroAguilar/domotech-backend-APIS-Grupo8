@@ -56,7 +56,7 @@ public class CartServiceImpl implements CartService {
         List<CartItem> items = cart.getItems();
         CartItem found = null;
         for (CartItem item : items) {
-            if (item.getProduct().getIdProducto().equals(idProducto)) {
+            if (item.getProduct().getProductId().equals(idProducto)) {
                 found = item;
                 break;
             }
@@ -82,7 +82,7 @@ public class CartServiceImpl implements CartService {
         List<CartItem> items = cart.getItems();
         CartItem toRemove = null;
         for (CartItem item : items) {
-            if (item.getProduct().getIdProducto().equals(idProducto)) {
+            if (item.getProduct().getProductId().equals(idProducto)) {
                 toRemove = item;
                 break;
             }

@@ -24,27 +24,27 @@ import lombok.Setter;
 
 @Entity
 @Data
-@Table(name = "pedidos")
-public class Pedido {
+@Table(name = "orders")
+public class Order {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPedido;
+    private Long orderId;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     @Getter @Setter
     private User user;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaPedido = new Date();
+    private Date orderDate = new Date();
 
     @Column
     private Double total;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus estadoPedido;
+    private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "pedido")
-    private List<DetallePedido> detallesPedidos;
+    @OneToMany(mappedBy = "order")
+    private List<OrderDetail> orderDetail;
 }
