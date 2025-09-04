@@ -13,20 +13,20 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "carrito_items")
-public class CarritoItem {
+public class CartItem {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idItem;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "id_carrito", nullable = false)
-    private Carrito carrito;
+    private Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "id_producto", nullable = false)
-    private Product producto;
+    private Product product;
 
     @Column
-    private Integer cantidad;
+    private Integer amount;
 }

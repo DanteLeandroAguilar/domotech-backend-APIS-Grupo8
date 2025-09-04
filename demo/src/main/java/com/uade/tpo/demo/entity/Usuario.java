@@ -51,7 +51,7 @@ public class Usuario {
     private Date fechaRegistro = new Date(); 
 
     @OneToMany(mappedBy = "usuario")
-    private List<Carrito> carritos;
+    private List<Cart> carts;
 
     @OneToMany(mappedBy = "usuario")
     private List<Pedido> pedidos;

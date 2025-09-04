@@ -18,21 +18,21 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "carritos")
-public class Carrito {
+public class Cart {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idCarrito;
+    private Long cartId;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    private Usuario user;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaCreacion = new Date();
+    private Date createdDate = new Date();
 
-    private Boolean activo = true;
+    private Boolean active = true;
 
     @OneToMany(mappedBy = "carrito")
-    private List<CarritoItem> items;
+    private List<CartItem> items;
 }

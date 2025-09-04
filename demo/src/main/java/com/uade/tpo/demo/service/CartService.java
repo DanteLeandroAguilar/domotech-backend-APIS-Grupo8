@@ -1,17 +1,17 @@
 package com.uade.tpo.demo.service;
 
-import com.uade.tpo.demo.entity.Carrito;
+import com.uade.tpo.demo.entity.Cart;
 
 public interface CartService {
     
-    public Carrito createCart(Long idUsuario);
+    public Cart createCart(Long idUsuario);
 
-    public Carrito addProduct(Long idCarrito, Long idProducto, int cantidad);
+    public Cart addProduct(Long idCart, Long idProducto, int cantidad);
 
-    public Carrito deleteProduct(Long idCarrito, Long idProducto);
+    public Cart deleteProduct(Long idCart, Long idProducto);
 
-    public Carrito cleanCart(Long idCarrito);
+    public Cart cleanCart(Long idCart);
 
-    public Carrito confirmCart(Long idCarrito);
+    public Cart confirmCart(Long idCart);
 
 }

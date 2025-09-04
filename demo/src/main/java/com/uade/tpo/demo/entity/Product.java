@@ -58,7 +58,7 @@ public class Product {
     private List<ImagenProducto> imagenes;
 
     @OneToMany(mappedBy = "producto")
-    private List<CarritoItem> carritoItems;
+    private List<CartItem> carritoItems;
 
     @OneToMany(mappedBy = "producto")
     private List<DetallePedido> detallePedidos;
