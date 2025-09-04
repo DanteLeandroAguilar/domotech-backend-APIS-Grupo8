@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import com.uade.tpo.demo.entity.Cart;
 import com.uade.tpo.demo.entity.CartItem;
 import com.uade.tpo.demo.entity.Product;
-import com.uade.tpo.demo.entity.Usuario;
+import com.uade.tpo.demo.entity.User;
 import com.uade.tpo.demo.repository.CartItemRepository;
 import com.uade.tpo.demo.repository.CartRepository;
 import com.uade.tpo.demo.repository.ProductoRepository;
-import com.uade.tpo.demo.repository.UsuarioRepository;
+import com.uade.tpo.demo.repository.UserRepository;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -24,7 +24,7 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UserRepository usuarioRepository;
 
     @Autowired
     private ProductoRepository productoRepository;
@@ -33,11 +33,11 @@ public class CartServiceImpl implements CartService {
     private CartItemRepository cartItemRepository;
 
     public Cart createCart(Long idUsuario) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findById(idUsuario);
+        Optional<User> usuarioOpt = usuarioRepository.findById(idUsuario);
         if (!usuarioOpt.isPresent()) {
             throw new RuntimeException("Usuario no encontrado");
         }
-        Usuario usuario = usuarioOpt.get();
+        User usuario = usuarioOpt.get();
         Optional<Cart> cartOpt = cartRepository.findByUserAndActiveTrue(usuario);
         if (cartOpt.isPresent()) {
             return cartOpt.get(); // Ya tiene un carrito activo

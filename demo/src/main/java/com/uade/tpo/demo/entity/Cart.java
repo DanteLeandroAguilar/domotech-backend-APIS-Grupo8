@@ -14,6 +14,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Data
@@ -26,7 +28,8 @@ public class Cart {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario user;
+    @Getter @Setter
+    private User user;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
