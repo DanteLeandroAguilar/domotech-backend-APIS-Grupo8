@@ -22,7 +22,7 @@ public class ImagenProducto {
 
     @ManyToOne
     @JoinColumn(name = "id_producto", nullable = false)
-    private Producto product;
+    private Product product;
 
     @Column
     private String imageUrl;
@@ -46,11 +46,11 @@ public class ImagenProducto {
         this.imageId = imageId;
     }
 
-    public Producto getProduct() {
+    public Product getProduct() {
         return product;
     }
 
-    public void setProduct(Producto product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 

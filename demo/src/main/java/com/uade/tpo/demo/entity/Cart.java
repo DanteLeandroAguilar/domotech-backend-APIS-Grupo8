@@ -14,25 +14,28 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Data
-@Table(name = "carritos")
-public class Carrito {
+@Table(name = "carts")
+public class Cart {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idCarrito;
+    private Long cartId;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "userId", nullable = false)
+    @Getter @Setter
+    private User user;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaCreacion = new Date();
+    private Date createdDate = new Date();
 
-    private Boolean activo = true;
+    private Boolean active = true;
 
-    @OneToMany(mappedBy = "carrito")
-    private List<CarritoItem> items;
+    @OneToMany(mappedBy = "cart")
+    private List<CartItem> items;
 }

@@ -3,7 +3,7 @@ package com.uade.tpo.demo.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.uade.tpo.demo.entity.enums.EstadoPedido;
+import com.uade.tpo.demo.entity.enums.OrderStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +19,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Data
@@ -31,7 +33,8 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    @Getter @Setter
+    private User user;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaPedido = new Date();
@@ -40,7 +43,7 @@ public class Pedido {
     private Double total;
 
     @Enumerated(EnumType.STRING)
-    private EstadoPedido estadoPedido;
+    private OrderStatus estadoPedido;
 
     @OneToMany(mappedBy = "pedido")
     private List<DetallePedido> detallesPedidos;

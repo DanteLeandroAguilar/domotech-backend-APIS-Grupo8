@@ -3,7 +3,7 @@ package com.uade.tpo.demo.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.uade.tpo.demo.entity.enums.Rol;
+import com.uade.tpo.demo.entity.enums.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,40 +20,40 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "usuarios")
-public class Usuario {
+@Table(name = "users")
+public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idUsuario;
+    private Long userId;
 
-    @Column
-    private String nombreUsuario;
+    @Column(nullable = false, unique = true, length = 50)
+    private String username;
 
-    @Column
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column
+    @Column(nullable = false, length = 255)
     private String password;
 
-    @Column
-    private String nombre;
+    @Column(nullable = false, length = 50)
+    private String name;
 
-    @Column
-    private String apellido;
+    @Column(nullable = false, length = 50)
+    private String lastName;
 
     @Column
     @Enumerated(EnumType.STRING)
-    private Rol rol;
+    private Role role;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP) 
-    private Date fechaRegistro = new Date(); 
+    private Date registrationDate = new Date();
 
-    @OneToMany(mappedBy = "usuario")
-    private List<Carrito> carritos;
+    @OneToMany(mappedBy = "user")
+    private List<Cart> carts;
 
-    @OneToMany(mappedBy = "usuario")
-    private List<Pedido> pedidos;
+    @OneToMany(mappedBy = "user")
+    private List<Pedido> orders;
 
 }
