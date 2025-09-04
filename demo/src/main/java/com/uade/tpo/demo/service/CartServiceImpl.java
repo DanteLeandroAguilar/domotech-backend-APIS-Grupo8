@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.uade.tpo.demo.entity.Carrito;
 import com.uade.tpo.demo.entity.Category;
-import com.uade.tpo.demo.entity.Usuario;
+import com.uade.tpo.demo.entity.User;
 import com.uade.tpo.demo.repository.CarritoRepository;
 import com.uade.tpo.demo.repository.CategoryRepository;
 import com.uade.tpo.demo.repository.UserRepository;
