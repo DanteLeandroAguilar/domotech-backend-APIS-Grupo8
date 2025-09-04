@@ -10,7 +10,7 @@ import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Usuario;
 import com.uade.tpo.demo.repository.CarritoRepository;
 import com.uade.tpo.demo.repository.CategoryRepository;
-import com.uade.tpo.demo.repository.UsuarioRepository;
+import com.uade.tpo.demo.repository.UserRepository;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -20,14 +20,14 @@ public class CartServiceImpl implements CartService {
     private CarritoRepository carritoRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UserRepository usuarioRepository;
 
     
     public Carrito createCart(Long idUsuario) {
-        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        User usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Carrito carrito = new Carrito();
-        carrito.setUsuario(usuario);
+        carrito.setUser(usuario);
         return carritoRepository.save(carrito);
     }
 

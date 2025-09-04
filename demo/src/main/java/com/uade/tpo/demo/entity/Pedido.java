@@ -19,6 +19,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Data
@@ -31,7 +33,8 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    @Getter @Setter
+    private User user;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaPedido = new Date();
