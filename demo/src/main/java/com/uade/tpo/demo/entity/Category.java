@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "categorias")
+@Table(name = "categories")
 public class Category {
     
     public Category() {}
@@ -33,7 +33,7 @@ public class Category {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "categoria")
+    @OneToMany(mappedBy = "category")
     private List<Product> products;
 
 }

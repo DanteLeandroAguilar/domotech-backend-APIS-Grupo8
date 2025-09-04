@@ -3,7 +3,7 @@ package com.uade.tpo.demo.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.uade.tpo.demo.entity.enums.ConectionType;
+import com.uade.tpo.demo.entity.enums.TipoConexion;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,8 +29,8 @@ public class Product {
     private Long productId;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId", nullable = false)
-    private Category category;
+    @JoinColumn(name = "category_id", nullable = false)
+    private Categoria category;
 
     private String name;
 
@@ -40,7 +40,7 @@ public class Product {
 
     private Integer stock;
 
-    private Double discount; // Porcentaje de descuento
+    private Double discount;
 
     @Temporal(TemporalType.TIMESTAMP) 
     private Date creationDate = new Date();
@@ -52,14 +52,14 @@ public class Product {
     private String compatibility;
 
     @Enumerated(EnumType.STRING)
-    private ConectionType conectionType;
+    private TipoConexion conectionType;
 
     @OneToMany(mappedBy = "product")
-    private List<ProductImage> imagenes;
+    private List<ProductImages> images;
 
     @OneToMany(mappedBy = "product")
     private List<CartItem> carritoItems;
 
     @OneToMany(mappedBy = "product")
-    private List<OrderDetail> detallePedidos;
+    private List<DetallePedido> detallePedidos;
 }

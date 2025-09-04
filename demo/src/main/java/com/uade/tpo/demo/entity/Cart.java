@@ -3,12 +3,7 @@ package com.uade.tpo.demo.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.uade.tpo.demo.entity.enums.EstadoPedido;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,27 +19,23 @@ import lombok.Setter;
 
 @Entity
 @Data
-@Table(name = "pedidos")
-public class Pedido {
+@Table(name = "carts")
+public class Cart {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPedido;
+    private Long cartId;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     @Getter @Setter
     private User user;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaPedido = new Date();
+    private Date createdDate = new Date();
 
-    @Column
-    private Double total;
+    private Boolean active = true;
 
-    @Enumerated(EnumType.STRING)
-    private EstadoPedido estadoPedido;
-
-    @OneToMany(mappedBy = "pedido")
-    private List<DetallePedido> detallesPedidos;
+    @OneToMany(mappedBy = "cart")
+    private List<CartItem> items;
 }

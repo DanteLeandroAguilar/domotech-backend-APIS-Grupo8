@@ -25,7 +25,7 @@ public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idUser;
+    private Long userId;
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;
@@ -51,9 +51,9 @@ public class User {
     private Date registrationDate = new Date();
 
     @OneToMany(mappedBy = "user")
-    private List<Carrito> carts;
+    private List<Cart> carts;
 
     @OneToMany(mappedBy = "user")
-    private List<Pedido> orders;
+    private List<Order> orders;
 
 }

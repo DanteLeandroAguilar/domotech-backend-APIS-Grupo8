@@ -12,21 +12,21 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "carrito_items")
-public class CarritoItem {
+@Table(name = "cartItems")
+public class CartItem {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idItem;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_carrito", nullable = false)
-    private Carrito carrito;
+    @JoinColumn(name = "cartId", nullable = false)
+    private Cart cart;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
-    private Product producto;
+    @JoinColumn(name = "productId", nullable = false)
+    private Product product;
 
     @Column
-    private Integer cantidad;
+    private Integer amount;
 }

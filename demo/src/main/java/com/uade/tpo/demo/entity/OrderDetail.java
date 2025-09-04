@@ -12,29 +12,29 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "detalle_pedido")
-public class DetallePedido {
+@Table(name = "orderDetail")
+public class OrderDetail {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idItemPedido;
+    private Long orderItemId;
 
     @ManyToOne
-    @JoinColumn(name = "id_pedido", nullable = false)
-    private Pedido pedido;
+    @JoinColumn(name = "orderId", nullable = false)
+    private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
-    private Product producto;
+    @JoinColumn(name = "productId", nullable = false)
+    private Product product;
 
     @Column
-    private Integer cantidad;
+    private Integer quantity;
 
     @Column
-    private Double precioUnitario;
+    private Double unitPrice;
 
     @Column
-    private Double descuentoAplicado;
+    private Double appliedDiscount;
 
     @Column
     private Double subtotal; // (precioUnitario - descuento) * cantidad
