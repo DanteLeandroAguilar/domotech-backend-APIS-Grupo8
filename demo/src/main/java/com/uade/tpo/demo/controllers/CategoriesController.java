@@ -10,11 +10,8 @@ import com.uade.tpo.demo.entity.dto.CategoryResponseDTO;
 import com.uade.tpo.demo.entity.dto.ErrorResponseDTO;
 import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
 import com.uade.tpo.demo.service.CategoryService;
-import com.uade.tpo.demo.service.CategoryServiceImpl;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
