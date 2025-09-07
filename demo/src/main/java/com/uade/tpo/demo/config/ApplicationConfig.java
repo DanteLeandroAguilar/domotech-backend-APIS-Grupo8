@@ -23,11 +23,10 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // Devuelve el usuario por email, usado para autenticación
+        // Devuelve el usuario por email, usado para autenticación JWT
         return username -> repository.findByEmail(username)
                 .map(u -> org.springframework.security.core.userdetails.User
-                    .withUsername(u.getEmail())
-                    .password(u.getPassword())
+                    .withUsername(u.getUsername())
                     .roles(u.getRole().name())
                     .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
