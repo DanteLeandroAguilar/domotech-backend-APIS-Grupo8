@@ -26,7 +26,8 @@ public class ApplicationConfig {
         // Devuelve el usuario por email, usado para autenticación JWT
         return username -> repository.findByEmail(username)
                 .map(u -> org.springframework.security.core.userdetails.User
-                    .withUsername(u.getUsername())
+                    .withUsername(u.getEmail())
+                    .password(u.getPassword())
                     .roles(u.getRole().name())
                     .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));

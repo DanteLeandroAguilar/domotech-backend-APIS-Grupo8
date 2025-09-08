@@ -11,6 +11,7 @@ import com.uade.tpo.demo.entity.dto.RegisterRequest;
 import com.uade.tpo.demo.config.JwtService;
 import com.uade.tpo.demo.entity.User;
 import com.uade.tpo.demo.repository.UserRepository;
+import com.uade.tpo.demo.exceptions.UserAlreadyExistsException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,13 +24,21 @@ public class AuthenticationService {
         private final AuthenticationManager authenticationManager;
 
         public AuthenticationResponse register(RegisterRequest request) {
+                // Validaciones de unicidad previas al guardado para evitar 500
+                if (repository.existsByEmail(request.getEmail())) {
+                        throw new UserAlreadyExistsException("El email ya está registrado");
+                }
+                if (repository.existsByUsername(request.getUsername())) {
+                        throw new UserAlreadyExistsException("El username ya está registrado");
+                }
                 var user = User.builder()
                                 .username(request.getUsername())
                                 .name(request.getFirstname())
                                 .lastName(request.getLastname())
                                 .email(request.getEmail())
                                 .password(passwordEncoder.encode(request.getPassword()))
-                                .role(request.getRole())
+                                .role(request.getRole() != null ? request.getRole() : com.uade.tpo.demo.entity.enums.Role.BUYER)
+                                .registrationDate(new java.util.Date())
                                 .build();
 
                 repository.save(user);

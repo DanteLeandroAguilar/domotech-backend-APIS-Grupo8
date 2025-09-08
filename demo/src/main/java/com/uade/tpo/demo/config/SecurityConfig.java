@@ -46,8 +46,11 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(PUT,  "/api/images/**").hasRole("SELLER")
             .requestMatchers(DELETE, "/api/images/**").hasRole("SELLER")
 
-            // Users: autenticado
-            .requestMatchers("/users/**").authenticated()
+            // Users: permisos específicos
+            .requestMatchers(GET, "/users/**").authenticated()
+            .requestMatchers(PUT, "/users/*/role").hasRole("SELLER")   // Solo SELLER puede cambiar roles
+            .requestMatchers(DELETE, "/users/**").hasRole("SELLER")    // Solo SELLER puede eliminar usuarios
+            .requestMatchers(PUT, "/users/**").hasRole("SELLER")       // Actualizar usuario (propio o SELLER)
 
             // Todo lo demás, autenticado
             .anyRequest().authenticated()

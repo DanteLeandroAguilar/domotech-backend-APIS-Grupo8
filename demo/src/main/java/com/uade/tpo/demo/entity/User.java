@@ -59,6 +59,7 @@ public class User implements UserDetails {
 
     @Column
     @Temporal(TemporalType.TIMESTAMP) 
+    @Builder.Default
     private Date registrationDate = new Date();
 
     @OneToMany(mappedBy = "user")
