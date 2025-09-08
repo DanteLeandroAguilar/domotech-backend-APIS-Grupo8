@@ -11,6 +11,7 @@ import com.uade.tpo.demo.entity.dto.ErrorResponseDTO;
 import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
 import com.uade.tpo.demo.service.CategoryService;
 import com.uade.tpo.demo.service.CategoryServiceImpl;
+import com.uade.tpo.demo.exceptions.CategoryNotFoundException;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -37,24 +38,19 @@ public class CategoriesController {
 
     // Defino el endpoint para obtener todas las categorias
     @GetMapping
-    public ResponseEntity<Page<CategoryResponseDTO>> getCategories(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        Page<Category> categories;
-        if (page == null || size == null) {
-            categories = categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE));
-        } else {
-            categories = categoryService.getCategories(PageRequest.of(page, size));
+    public ResponseEntity<List<CategoryResponseDTO>> getCategories() {
+        List<Category> categories = categoryService.getAllCategories();
+        List<CategoryResponseDTO> dtoList = new ArrayList<>();
+        for (Category cat : categories) {
+            dtoList.add(new CategoryResponseDTO(
+                true,
+                null,
+                cat.getCategoryId(),
+                cat.getName(),
+                cat.getDescription()
+            ));
         }
-        // Mapeo cada Category a CategoryResponseDTO
-        Page<CategoryResponseDTO> dtoPage = categories.map(cat -> new CategoryResponseDTO(
-            true,
-            null,
-            cat.getCategoryId(),
-            cat.getName(),
-            cat.getDescription()
-        ));
-        return ResponseEntity.ok(dtoPage);
+        return ResponseEntity.ok(dtoList);
     }
 
     // Defino el endpoint para obtener una categoria por id
@@ -72,7 +68,7 @@ public class CategoriesController {
             );
             return ResponseEntity.ok(dto);
         }
-        ErrorResponseDTO error = new ErrorResponseDTO(false, "Category not found");
+        ErrorResponseDTO error = new ErrorResponseDTO(false, "Categoria no encontrada");
         return ResponseEntity.status(404).body(error);
     }
 
@@ -81,41 +77,60 @@ public class CategoriesController {
     public ResponseEntity<Object> createCategory(@RequestBody CategoryRequest categoryRequest) {
         try {
             Category result = categoryService.createCategory(categoryRequest.getName(), categoryRequest.getDescription());
-            // Construyo el DTO de respuesta exitosa (incluye datos de la categoría)
             CategoryResponseDTO response = new CategoryResponseDTO(
                 true,
-                "Category created successfully",
+                "Categoria creada exitosamente",
                 result.getCategoryId(),
                 result.getName(),
                 result.getDescription()
             );
             return ResponseEntity.created(URI.create("/categories/" + result.getCategoryId())).body(response);
         } catch (CategoryDuplicateException e) {
-            // Devuelvo el error usando ErrorResponseDTO
-            ErrorResponseDTO error = new ErrorResponseDTO(false, "Category already exists");
+            ErrorResponseDTO error = new ErrorResponseDTO(false, "La categoría ya existe");
             return ResponseEntity.badRequest().body(error);
         }
     }
 
     // Defino el endpoint para actualizar una categoria existente
     @PutMapping("/{categoryId}")
-    public ResponseEntity<Object> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryRequest categoryRequest)
-            throws CategoryDuplicateException {
-        Category updated = categoryService.updateCategory(categoryId, categoryRequest.getDescription());
-        CategoryResponseDTO dto = new CategoryResponseDTO(
-            true,
-            "Category updated successfully",
-            updated.getCategoryId(),
-            updated.getName(),
-            updated.getDescription()
-        );
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<Object> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryRequest categoryRequest) {
+        try {
+            Category updated = categoryService.updateCategory(categoryId, categoryRequest.getName(), categoryRequest.getDescription());
+            CategoryResponseDTO dto = new CategoryResponseDTO(
+                true,
+                "Categoria actualizada exitosamente",
+                updated.getCategoryId(),
+                updated.getName(),
+                updated.getDescription()
+            );
+            return ResponseEntity.ok(dto);
+        } catch (CategoryDuplicateException e) {
+            ErrorResponseDTO error = new ErrorResponseDTO(false, "La categoría ya existe");
+            return ResponseEntity.badRequest().body(error);
+        } catch (CategoryNotFoundException e) {
+            ErrorResponseDTO error = new ErrorResponseDTO(false, e.getMessage());
+            return ResponseEntity.status(404).body(error);
+        }
     }
 
     // Defino el endpoint para eliminar una categoria existente
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
-        categoryService.deleteCategory(categoryId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Object> deleteCategory(@PathVariable Long categoryId) {
+        Optional<Category> result = categoryService.getCategoryById(categoryId);
+        if (result.isPresent()) {
+            Category cat = result.get();
+            categoryService.deleteCategory(categoryId);
+            CategoryResponseDTO response = new CategoryResponseDTO(
+                true,
+                "Categoría eliminada exitosamente",
+                cat.getCategoryId(),
+                cat.getName(),
+                cat.getDescription()
+            );
+            return ResponseEntity.ok(response);
+        } else {
+            ErrorResponseDTO error = new ErrorResponseDTO(false, "Categoria no encontrada");
+            return ResponseEntity.status(404).body(error);
+        }
     }
 }
