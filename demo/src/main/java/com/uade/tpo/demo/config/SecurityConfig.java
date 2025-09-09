@@ -29,7 +29,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(req -> req
             // Público
-            .requestMatchers("/auth/**").permitAll()
+            .requestMatchers("/api/v1/auth/**").permitAll()
 
             // Categories: escritura solo SELLER, lectura pública
             .requestMatchers(POST,   "/categories/**").hasRole("SELLER")
