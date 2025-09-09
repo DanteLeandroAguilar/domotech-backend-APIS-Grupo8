@@ -23,17 +23,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<UserResponse> registerUser(@RequestBody UserRegisterRequest request) {
-        UserResponse user = userService.registerUser(request);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<UserResponse> loginUser(@RequestBody UserLoginRequest request) {
-        UserResponse user = userService.loginUser(request);
-        return ResponseEntity.ok(user);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {

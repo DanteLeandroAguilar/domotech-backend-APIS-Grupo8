@@ -15,7 +15,6 @@ import com.uade.tpo.demo.entity.dto.UserUpdateRequest;
 import com.uade.tpo.demo.entity.dto.UserRoleUpdateRequest;
 import com.uade.tpo.demo.entity.enums.Role;
 import com.uade.tpo.demo.repository.UserRepository;
-import com.uade.tpo.demo.service.UserService;
 import com.uade.tpo.demo.exceptions.UserNotFoundException;
 import com.uade.tpo.demo.exceptions.UserAlreadyExistsException;
 import com.uade.tpo.demo.exceptions.InvalidCredentialsException;
@@ -133,8 +132,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getLoggedUser() {
         String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println("USERNAME");
-        System.out.println(username);
         return userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
     }
 

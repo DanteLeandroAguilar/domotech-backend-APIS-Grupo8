@@ -23,6 +23,11 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> repository.findByEmail(username)
+                .map(u -> org.springframework.security.core.userdetails.User
+                    .withUsername(u.getEmail())
+                    .password(u.getPassword())
+                    .roles(u.getRole().name())
+                    .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 

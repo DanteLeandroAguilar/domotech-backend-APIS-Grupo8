@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class User implements UserDetails{
+public class User implements UserDetails {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +59,7 @@ public class User implements UserDetails{
 
     @Column
     @Temporal(TemporalType.TIMESTAMP) 
+    @Builder.Default
     private Date registrationDate = new Date();
 
     @OneToMany(mappedBy = "user")
@@ -67,6 +68,7 @@ public class User implements UserDetails{
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
 
+    // Implementación de UserDetails para JWT
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -96,5 +98,4 @@ public class User implements UserDetails{
     public boolean isEnabled() {
         return true;
     }
-
 }

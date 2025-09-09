@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.dto.CategoryRequest;
 import com.uade.tpo.demo.entity.dto.CategoryResponseDTO;
+import com.uade.tpo.demo.entity.dto.CategorySimpleDTO;
 import com.uade.tpo.demo.entity.dto.ErrorResponseDTO;
 import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
 import com.uade.tpo.demo.service.CategoryService;
@@ -14,8 +15,6 @@ import com.uade.tpo.demo.service.CategoryServiceImpl;
 import com.uade.tpo.demo.exceptions.CategoryNotFoundException;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,19 +37,22 @@ public class CategoriesController {
 
     // Defino el endpoint para obtener todas las categorias
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> getCategories() {
-        List<Category> categories = categoryService.getAllCategories();
-        List<CategoryResponseDTO> dtoList = new ArrayList<>();
-        for (Category cat : categories) {
-            dtoList.add(new CategoryResponseDTO(
-                true,
-                null,
-                cat.getCategoryId(),
-                cat.getName(),
-                cat.getDescription()
-            ));
+    public ResponseEntity<Page<CategorySimpleDTO>> getCategories(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        Page<Category> categories;
+        if (page == null || size == null) {
+            categories = categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE));
+        } else {
+            categories = categoryService.getCategories(PageRequest.of(page, size));
         }
-        return ResponseEntity.ok(dtoList);
+        // Mapeo cada Category a CategorySimpleDTO (sin message y success)
+        Page<CategorySimpleDTO> dtoPage = categories.map(cat -> new CategorySimpleDTO(
+            cat.getCategoryId(),
+            cat.getName(),
+            cat.getDescription()
+        ));
+        return ResponseEntity.ok(dtoPage);
     }
 
     // Defino el endpoint para obtener una categoria por id
