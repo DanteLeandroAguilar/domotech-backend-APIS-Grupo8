@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import com.uade.tpo.demo.entity.mapper.OrderMapper;
+import com.uade.tpo.demo.entity.dto.OrderResponseDTO;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -30,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order confirmOrder(Long cartId) {
+    public OrderResponseDTO confirmOrder(Long cartId) {
         Cart cart = cartService.getCartById(cartId);
         List<CartItem> items = cartService.getCartItems(cartId);
         if (items.isEmpty()) throw new RuntimeException("El carrito está vacío");
@@ -47,43 +49,48 @@ public class OrderServiceImpl implements OrderService {
             total += detail.getSubtotal();
             details.add(detail);
         }
-        Order orden = new Order();
-        orden.setUser(cart.getUser());
-        orden.setOrderDate(new Date());
-        orden.setTotal(total);
-        orden.setOrderStatus(OrderStatus.CONFIRMED);
-        orden = orderRepository.save(orden);
+        Order order = new Order();
+        order.setUser(cart.getUser());
+        order.setOrderDate(new Date());
+        order.setTotal(total);
+        order.setOrderStatus(OrderStatus.CONFIRMED);
+        order = orderRepository.save(order);
         for (OrderDetail detail : details) {
-            detail.setOrder(orden);
+            detail.setOrder(order);
         }
         orderDetailService.saveAllOrderDetails(details);
         cartService.deactivateCart(cartId);
-        return orden;
+        return OrderMapper.toOrderResponseDTO(order);
     }
 
     @Override
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderResponseDTO> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
     }
 
     @Override
-    public List<Order> getOrdersByUserId(Long userId) {
-        return orderRepository.findByUserId(userId);
+    public List<OrderResponseDTO> getOrdersByUserId(Long userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
     }
 
     @Override
-    public List<Order> getOrdersByLoggedUser() {
+    public List<OrderResponseDTO> getOrdersByLoggedUser() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return orderRepository.findByUserId(user.getUserId());
+        List<Order> orders = orderRepository.findByUserId(user.getUserId());
+        return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
     }
 
     @Override
-    public List<Order> getOrdersByDate(Date date) {
-        return orderRepository.findByOrderDate(new java.sql.Date(date.getTime()));
+    public List<OrderResponseDTO> getOrdersByDate(Date date) {
+        List<Order> orders = orderRepository.findByOrderDate(new java.sql.Date(date.getTime()));
+        return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
     }
 
     @Override
-    public List<Order> getOrdersByDateRange(Date startDate, Date endDate) {
-        return orderRepository.findByOrderDateBetween(startDate, endDate);
+    public List<OrderResponseDTO> getOrdersByDateRange(Date startDate, Date endDate) {
+        List<Order> orders = orderRepository.findByOrderDateBetween(startDate, endDate);
+        return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
     }
 }

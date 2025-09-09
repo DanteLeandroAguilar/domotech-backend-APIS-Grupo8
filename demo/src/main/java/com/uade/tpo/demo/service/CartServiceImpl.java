@@ -12,6 +12,8 @@ import com.uade.tpo.demo.entity.Cart;
 import com.uade.tpo.demo.entity.CartItem;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.entity.User;
+import com.uade.tpo.demo.entity.dto.CartResponseDTO;
+import com.uade.tpo.demo.entity.mapper.CartMapper;
 import com.uade.tpo.demo.repository.CartItemRepository;
 import com.uade.tpo.demo.repository.CartRepository;
 import com.uade.tpo.demo.repository.ProductoRepository;
@@ -36,25 +38,28 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private UserService userService;
 
-    public Cart createCart(Long idUsuario) {
+    public CartResponseDTO createCart(Long idUsuario) {
         Optional<User> usuarioOpt = userRepository.findById(idUsuario);
         if (usuarioOpt.isEmpty()) {
             throw new RuntimeException("Usuario no encontrado");
         }
         User usuario = usuarioOpt.get();
         Optional<Cart> cartOpt = cartRepository.findByUserAndActiveTrue(usuario);
+        Cart cart;
         if (cartOpt.isPresent()) {
-            return cartOpt.get(); // Ya tiene un carrito activo
+            cart = cartOpt.get();
+        } else {
+            cart = new Cart();
+            cart.setUser(usuario);
+            cart.setActive(true);
+            cart.setItems(new ArrayList<>());
+            cart = cartRepository.save(cart);
         }
-        Cart cart = new Cart();
-        cart.setUser(usuario);
-        cart.setActive(true);
-        cart.setItems(new ArrayList<>());
-        return cartRepository.save(cart);
+        return CartMapper.toCartResponseDTO(cart);
     }
 
     @Transactional
-    public Cart addProduct(Long idCart, Long idProducto, int cantidad) {
+    public CartResponseDTO addProduct(Long idCart, Long idProducto, int cantidad) {
         Cart cart;
         if (idCart == null) {
             // Si no hay idCart, crear uno nuevo para el usuario actual
@@ -85,11 +90,12 @@ public class CartServiceImpl implements CartService {
             items.add(newItem);
         }
         cart.setItems(items);
-        return cartRepository.save(cart);
+        cart = cartRepository.save(cart);
+        return CartMapper.toCartResponseDTO(cart);
     }
 
     @Transactional
-    public Cart deleteProduct(Long idCart, Long idProducto) {
+    public CartResponseDTO deleteProduct(Long idCart, Long idProducto) {
         Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
         if (!cart.getActive()) throw new RuntimeException("El carrito no está activo");
         List<CartItem> items = cart.getItems();
@@ -105,25 +111,28 @@ public class CartServiceImpl implements CartService {
             cartItemRepository.delete(toRemove);
         }
         cart.setItems(items);
-        return cartRepository.save(cart);
+        cart = cartRepository.save(cart);
+        return CartMapper.toCartResponseDTO(cart);
     }
 
     @Transactional
-    public Cart cleanCart(Long idCart) {
+    public CartResponseDTO cleanCart(Long idCart) {
         Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
         if (!cart.getActive()) throw new RuntimeException("El carrito no está activo");
         List<CartItem> items = new ArrayList<>(cart.getItems());
         cartItemRepository.deleteAll(items);
         cart.getItems().clear();
-        return cartRepository.save(cart);
+        cart = cartRepository.save(cart);
+        return CartMapper.toCartResponseDTO(cart);
     }
 
     @Transactional
-    public Cart confirmCart(Long idCart) {
+    public CartResponseDTO confirmCart(Long idCart) {
         Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
         if (!cart.getActive()) throw new RuntimeException("El carrito ya fue confirmado");
         cart.setActive(false);
-        return cartRepository.save(cart);
+        cart = cartRepository.save(cart);
+        return CartMapper.toCartResponseDTO(cart);
     }
 
     @Override
@@ -133,7 +142,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<CartItem> getCartItems(Long cartId) {
-        return cartItemRepository.findByCart_CartId(cartId);
+        return cartItemRepository.findByCartId(cartId);
     }
 
     @Override
