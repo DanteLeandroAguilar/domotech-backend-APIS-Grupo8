@@ -25,7 +25,7 @@ public class CartMapper {
 
     public static CartItemResponseDTO toCartItemResponseDTO(CartItem item) {
         CartItemResponseDTO itemDto = new CartItemResponseDTO();
-        itemDto.setId(item.getCartItemId());
+        itemDto.setId(item.getId());
         itemDto.setProductId(item.getProduct().getProductId());
         itemDto.setProductName(item.getProduct().getName());
         itemDto.setAmount(item.getAmount());

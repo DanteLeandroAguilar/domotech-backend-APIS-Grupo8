@@ -38,38 +38,15 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private UserService userService;
 
-    public CartResponseDTO createCart(Long idUsuario) {
-        Optional<User> usuarioOpt = userRepository.findById(idUsuario);
-        if (usuarioOpt.isEmpty()) {
-            throw new RuntimeException("Usuario no encontrado");
-        }
-        User usuario = usuarioOpt.get();
-        Optional<Cart> cartOpt = cartRepository.findByUserAndActiveTrue(usuario);
-        Cart cart;
-        if (cartOpt.isPresent()) {
-            cart = cartOpt.get();
-        } else {
-            cart = new Cart();
-            cart.setUser(usuario);
-            cart.setActive(true);
-            cart.setItems(new ArrayList<>());
-            cart = cartRepository.save(cart);
-        }
-        return CartMapper.toCartResponseDTO(cart);
-    }
-
+    @Override
     @Transactional
-    public CartResponseDTO addProduct(Long idCart, Long idProducto, int cantidad) {
-        Cart cart;
-        if (idCart == null) {
-            // Si no hay idCart, crear uno nuevo para el usuario actual
-            User usuario = userService.getLoggedUser();
-            cart = getOrCreateActiveCart(usuario.getUserId());
-        } else {
-            cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-        }
-        Product product = productoRepository.findById(idProducto).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+    public CartResponseDTO updateProductAmount(Long idProducto, int cantidad) {
+        User usuario = userService.getLoggedUser();
+        Cart cart = getOrCreateActiveCart(usuario.getUserId());
+
         if (!cart.getActive()) throw new RuntimeException("El carrito no está activo");
+        Product product = productoRepository.findById(idProducto).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
         List<CartItem> items = cart.getItems();
         CartItem found = null;
         for (CartItem item : items) {
@@ -78,8 +55,14 @@ public class CartServiceImpl implements CartService {
                 break;
             }
         }
-        if (found != null) {
-            found.setAmount(found.getAmount() + cantidad);
+
+        if (cantidad <= 0) {
+            if (found != null) {
+                items.remove(found);
+                cartItemRepository.delete(found);
+            }
+        } else if (found != null) {
+            found.setAmount(cantidad);
             cartItemRepository.save(found);
         } else {
             CartItem newItem = new CartItem();
@@ -89,51 +72,12 @@ public class CartServiceImpl implements CartService {
             cartItemRepository.save(newItem);
             items.add(newItem);
         }
+
         cart.setItems(items);
         cart = cartRepository.save(cart);
         return CartMapper.toCartResponseDTO(cart);
     }
 
-    @Transactional
-    public CartResponseDTO deleteProduct(Long idCart, Long idProducto) {
-        Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-        if (!cart.getActive()) throw new RuntimeException("El carrito no está activo");
-        List<CartItem> items = cart.getItems();
-        CartItem toRemove = null;
-        for (CartItem item : items) {
-            if (item.getProduct().getProductId().equals(idProducto)) {
-                toRemove = item;
-                break;
-            }
-        }
-        if (toRemove != null) {
-            items.remove(toRemove);
-            cartItemRepository.delete(toRemove);
-        }
-        cart.setItems(items);
-        cart = cartRepository.save(cart);
-        return CartMapper.toCartResponseDTO(cart);
-    }
-
-    @Transactional
-    public CartResponseDTO cleanCart(Long idCart) {
-        Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-        if (!cart.getActive()) throw new RuntimeException("El carrito no está activo");
-        List<CartItem> items = new ArrayList<>(cart.getItems());
-        cartItemRepository.deleteAll(items);
-        cart.getItems().clear();
-        cart = cartRepository.save(cart);
-        return CartMapper.toCartResponseDTO(cart);
-    }
-
-    @Transactional
-    public CartResponseDTO confirmCart(Long idCart) {
-        Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-        if (!cart.getActive()) throw new RuntimeException("El carrito ya fue confirmado");
-        cart.setActive(false);
-        cart = cartRepository.save(cart);
-        return CartMapper.toCartResponseDTO(cart);
-    }
 
     @Override
     public Cart getCartById(Long cartId) {

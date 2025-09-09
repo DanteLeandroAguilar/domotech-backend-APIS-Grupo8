@@ -133,7 +133,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getLoggedUser() {
         String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
+        System.out.println("USERNAME");
+        System.out.println(username);
+        return userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
     }
 
     /**

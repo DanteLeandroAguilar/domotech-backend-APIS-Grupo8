@@ -7,16 +7,8 @@ import com.uade.tpo.demo.entity.dto.CartResponseDTO;
 import java.util.List;
 
 public interface CartService {
-    
-    public CartResponseDTO createCart(Long idUsuario);
 
-    public CartResponseDTO addProduct(Long idCart, Long idProducto, int cantidad);
-
-    public CartResponseDTO deleteProduct(Long idCart, Long idProducto);
-
-    public CartResponseDTO cleanCart(Long idCart);
-
-    public CartResponseDTO confirmCart(Long idCart);
+    CartResponseDTO updateProductAmount(Long idProduct, int amount);
 
     Cart getCartById(Long cartId);
 
