@@ -7,14 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.dto.CategoryRequest;
 import com.uade.tpo.demo.entity.dto.CategoryResponseDTO;
+import com.uade.tpo.demo.entity.dto.CategorySimpleDTO;
 import com.uade.tpo.demo.entity.dto.ErrorResponseDTO;
 import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
 import com.uade.tpo.demo.service.CategoryService;
-import com.uade.tpo.demo.service.CategoryServiceImpl;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,7 @@ public class CategoriesController {
 
     // Defino el endpoint para obtener todas las categorias
     @GetMapping
-    public ResponseEntity<Page<CategoryResponseDTO>> getCategories(
+    public ResponseEntity<Page<CategorySimpleDTO>> getCategories(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         Page<Category> categories;
@@ -46,10 +44,8 @@ public class CategoriesController {
         } else {
             categories = categoryService.getCategories(PageRequest.of(page, size));
         }
-        // Mapeo cada Category a CategoryResponseDTO
-        Page<CategoryResponseDTO> dtoPage = categories.map(cat -> new CategoryResponseDTO(
-            true,
-            null,
+        // Mapeo cada Category a CategorySimpleDTO (sin message y success)
+        Page<CategorySimpleDTO> dtoPage = categories.map(cat -> new CategorySimpleDTO(
             cat.getCategoryId(),
             cat.getName(),
             cat.getDescription()
@@ -114,8 +110,9 @@ public class CategoriesController {
 
     // Defino el endpoint para eliminar una categoria existente
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+    public ResponseEntity<Object> deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
-        return ResponseEntity.noContent().build();
+        ErrorResponseDTO response = new ErrorResponseDTO(true, "Category deleted successfully");
+        return ResponseEntity.ok(response);
     }
 }
