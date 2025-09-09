@@ -34,6 +34,9 @@ public class Cart {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModifiedDate = new Date();
+
     private Boolean active = true;
 
     @OneToMany(mappedBy = "cart")

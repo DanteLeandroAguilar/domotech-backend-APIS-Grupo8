@@ -129,6 +129,12 @@ public class UserServiceImpl implements UserService {
         return convertToUserResponse(updatedUser);
     }
     
+    @Override
+    public User getLoggedUser() {
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
+    }
+
     /**
      * Convierte una entidad User a UserResponse
      */

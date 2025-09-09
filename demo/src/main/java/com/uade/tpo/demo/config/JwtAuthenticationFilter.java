@@ -20,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-// Filtro que intercepta cada petición HTTP para validar el JWT.
-// Si el token es válido, autentica al usuario en el contexto de seguridad de Spring.
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
@@ -30,19 +28,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        // Extrae el header Authorization y valida el JWT
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
         if (authHeader == null || !authHeader.startsWith("Bearer")) {
-            // Si no hay token, sigue la cadena de filtros sin autenticar
             filterChain.doFilter(request, response);
             return;
         }
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Si el usuario existe y el token es válido, lo autentica
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
