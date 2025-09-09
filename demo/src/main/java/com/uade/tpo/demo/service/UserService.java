@@ -20,4 +20,6 @@ public interface UserService {
     void deleteUser(Long id);
     
     UserResponse updateUserRole(Long id, UserRoleUpdateRequest request);
+
+    User getLoggedUser();
 }
