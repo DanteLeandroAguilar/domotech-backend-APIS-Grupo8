@@ -39,4 +39,13 @@ public class OrderDetail {
     @Column
     private Double subtotal; // (precioUnitario - descuento) * cantidad
 
+    public OrderDetail() {}
+
+    public OrderDetail(Product product, Integer quantity, Double unitPrice, Double appliedDiscount, Double subtotal) {
+        this.product = product;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.appliedDiscount = appliedDiscount;
+        this.subtotal = subtotal;
+    }
 }

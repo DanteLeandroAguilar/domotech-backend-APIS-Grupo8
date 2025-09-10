@@ -6,11 +6,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uade.tpo.demo.entity.Cart;
 import com.uade.tpo.demo.entity.CartItem;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.entity.User;
+import com.uade.tpo.demo.entity.dto.CartResponseDTO;
+import com.uade.tpo.demo.entity.mapper.CartMapper;
 import com.uade.tpo.demo.repository.CartItemRepository;
 import com.uade.tpo.demo.repository.CartRepository;
 import com.uade.tpo.demo.repository.ProductoRepository;
@@ -24,7 +27,7 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
 
     @Autowired
-    private UserRepository usuarioRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private ProductoRepository productoRepository;
@@ -32,27 +35,18 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartItemRepository cartItemRepository;
 
-    public Cart createCart(Long idUsuario) {
-        Optional<User> usuarioOpt = usuarioRepository.findById(idUsuario);
-        if (!usuarioOpt.isPresent()) {
-            throw new RuntimeException("Usuario no encontrado");
-        }
-        User usuario = usuarioOpt.get();
-        Optional<Cart> cartOpt = cartRepository.findByUserAndActiveTrue(usuario);
-        if (cartOpt.isPresent()) {
-            return cartOpt.get(); // Ya tiene un carrito activo
-        }
-        Cart cart = new Cart();
-        cart.setUser(usuario);
-        cart.setActive(true);
-        cart.setItems(new ArrayList<>());
-        return cartRepository.save(cart);
-    }
+    @Autowired
+    private UserService userService;
 
-    public Cart addProduct(Long idCart, Long idProducto, int cantidad) {
-        Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-        Product product = productoRepository.findById(idProducto).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+    @Override
+    @Transactional
+    public CartResponseDTO updateProductAmount(Long idProducto, int cantidad) {
+        User usuario = userService.getLoggedUser();
+        Cart cart = getOrCreateActiveCart(usuario.getUserId());
+
         if (!cart.getActive()) throw new RuntimeException("El carrito no está activo");
+        Product product = productoRepository.findById(idProducto).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
         List<CartItem> items = cart.getItems();
         CartItem found = null;
         for (CartItem item : items) {
@@ -61,8 +55,14 @@ public class CartServiceImpl implements CartService {
                 break;
             }
         }
-        if (found != null) {
-            found.setAmount(found.getAmount() + cantidad);
+
+        if (cantidad <= 0) {
+            if (found != null) {
+                items.remove(found);
+                cartItemRepository.delete(found);
+            }
+        } else if (found != null) {
+            found.setAmount(cantidad);
             cartItemRepository.save(found);
         } else {
             CartItem newItem = new CartItem();
@@ -72,45 +72,40 @@ public class CartServiceImpl implements CartService {
             cartItemRepository.save(newItem);
             items.add(newItem);
         }
+
         cart.setItems(items);
-        return cartRepository.save(cart);
+        cart = cartRepository.save(cart);
+        return CartMapper.toCartResponseDTO(cart);
     }
 
-    public Cart deleteProduct(Long idCart, Long idProducto) {
-        Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-        if (!cart.getActive()) throw new RuntimeException("El carrito no está activo");
-        List<CartItem> items = cart.getItems();
-        CartItem toRemove = null;
-        for (CartItem item : items) {
-            if (item.getProduct().getProductId().equals(idProducto)) {
-                toRemove = item;
-                break;
-            }
-        }
-        if (toRemove != null) {
-            items.remove(toRemove);
-            cartItemRepository.delete(toRemove);
-        }
-        cart.setItems(items);
-        return cartRepository.save(cart);
+
+    @Override
+    public Cart getCartById(Long cartId) {
+        return cartRepository.findById(cartId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
     }
 
-    public Cart cleanCart(Long idCart) {
-        Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-        if (!cart.getActive()) throw new RuntimeException("El carrito no está activo");
-        List<CartItem> items = new ArrayList<>(cart.getItems());
-        for (CartItem item : items) {
-            cartItemRepository.delete(item);
-        }
-        cart.getItems().clear();
-        return cartRepository.save(cart);
+    @Override
+    public List<CartItem> getCartItems(Long cartId) {
+        return cartItemRepository.findByCartId(cartId);
     }
 
-    public Cart confirmCart(Long idCart) {
-        Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-        if (!cart.getActive()) throw new RuntimeException("El carrito ya fue confirmado");
+    @Override
+    public void deactivateCart(Long cartId) {
+        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
         cart.setActive(false);
-        return cartRepository.save(cart);
+        cartRepository.save(cart);
     }
     
+    private Cart getOrCreateActiveCart(Long userId) {
+        User usuario = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Optional<Cart> cartOpt = cartRepository.findByUserAndActiveTrue(usuario);
+        if (cartOpt.isPresent()) {
+            return cartOpt.get();
+        }
+        Cart cart = new Cart();
+        cart.setUser(usuario);
+        cart.setActive(true);
+        cart.setItems(new ArrayList<>());
+        return cartRepository.save(cart);
+    }
 }
