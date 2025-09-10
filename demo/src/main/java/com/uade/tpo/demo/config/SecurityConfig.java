@@ -37,9 +37,6 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(DELETE, "/categories/**").hasRole("SELLER")
             .requestMatchers(GET,    "/categories/**").permitAll()
 
-            // Carts: solo BUYER
-            .requestMatchers("/carts/**").hasRole("BUYER")
-
             // Imágenes: lectura pública, escritura SELLER
             .requestMatchers(GET,  "/api/productos/*/images/**", "/api/images/**").permitAll()
             .requestMatchers(POST, "/api/productos/*/images").hasRole("SELLER")

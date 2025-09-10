@@ -8,6 +8,8 @@ import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.entity.User;
 import com.uade.tpo.demo.entity.enums.OrderStatus;
 import com.uade.tpo.demo.repository.OrderRepository;
+import com.uade.tpo.demo.exceptions.EmptyCartException;
+import com.uade.tpo.demo.exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,18 +31,20 @@ public class OrderServiceImpl implements OrderService {
     private CartService cartService;
     @Autowired
     private OrderDetailService orderDetailService;
+    @Autowired
+    private UserService userService;
 
     @Override
     @Transactional
-    public OrderResponseDTO confirmOrder(Long cartId) {
-        Cart cart = cartService.getCartById(cartId);
-        List<CartItem> items = cartService.getCartItems(cartId);
-        if (items.isEmpty()) throw new RuntimeException("El carrito está vacío");
+    public OrderResponseDTO confirmOrder() {
+        Cart cart = cartService.getActiveCartByLoggedUser();
+        List<CartItem> items = cartService.getCartItems(cart.getCartId());
+        if (items.isEmpty()) throw new EmptyCartException("El carrito está vacío, no se puede procesar la orden");
         double total = 0.0;
         List<OrderDetail> details = new ArrayList<>();
         for (CartItem item : items) {
             Product product = productService.getProductById(item.getProduct().getProductId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                    .orElseThrow(() -> new ProductNotFoundException("Producto no encontrado con ID: " + item.getProduct().getProductId()));
             productService.decreaseStock(product.getProductId(), item.getAmount());
             double appliedDiscount = 0.0;
             double subtotal = (product.getPrice() - appliedDiscount) * item.getAmount();
@@ -58,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
             detail.setOrder(order);
         }
         orderDetailService.saveAllOrderDetails(details);
-        cartService.deactivateCart(cartId);
+        cartService.deactivateCart(cart.getCartId());
         return OrderMapper.toOrderResponseDTO(order);
     }
 
@@ -76,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderResponseDTO> getOrdersByLoggedUser() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getLoggedUser();
         List<Order> orders = orderRepository.findByUserId(user.getUserId());
         return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
     }
@@ -93,3 +97,4 @@ public class OrderServiceImpl implements OrderService {
         return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
     }
 }
+

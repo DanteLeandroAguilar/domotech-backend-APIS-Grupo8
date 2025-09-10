@@ -18,10 +18,11 @@ import com.uade.tpo.demo.repository.CartItemRepository;
 import com.uade.tpo.demo.repository.CartRepository;
 import com.uade.tpo.demo.repository.ProductoRepository;
 import com.uade.tpo.demo.repository.UserRepository;
+import com.uade.tpo.demo.exceptions.CartNotFoundException;
+import com.uade.tpo.demo.exceptions.ProductNotFoundException;
 
 @Service
 public class CartServiceImpl implements CartService {
-
 
     @Autowired
     private CartRepository cartRepository;
@@ -44,8 +45,8 @@ public class CartServiceImpl implements CartService {
         User usuario = userService.getLoggedUser();
         Cart cart = getOrCreateActiveCart(usuario.getUserId());
 
-        if (!cart.getActive()) throw new RuntimeException("El carrito no está activo");
-        Product product = productoRepository.findById(idProducto).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        if (!cart.getActive()) throw new CartNotFoundException("El carrito no está activo");
+        Product product = productoRepository.findById(idProducto).orElseThrow(() -> new ProductNotFoundException("Producto no encontrado con ID: " + idProducto));
 
         List<CartItem> items = cart.getItems();
         CartItem found = null;
@@ -78,10 +79,15 @@ public class CartServiceImpl implements CartService {
         return CartMapper.toCartResponseDTO(cart);
     }
 
-
     @Override
     public Cart getCartById(Long cartId) {
-        return cartRepository.findById(cartId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+        return cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException("Carrito no encontrado con ID: " + cartId));
+    }
+
+    @Override
+    public Cart getActiveCartByLoggedUser() {
+        User usuario = userService.getLoggedUser();
+        return getOrCreateActiveCart(usuario.getUserId());
     }
 
     @Override
@@ -91,7 +97,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void deactivateCart(Long cartId) {
-        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException("Carrito no encontrado con ID: " + cartId));
         cart.setActive(false);
         cartRepository.save(cart);
     }

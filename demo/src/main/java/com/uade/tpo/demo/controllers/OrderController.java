@@ -14,9 +14,9 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/confirm/{cartId}")
-    public OrderResponseDTO confirmOrder(@PathVariable Long cartId) {
-        return orderService.confirmOrder(cartId);
+    @PostMapping("/confirm")
+    public OrderResponseDTO confirmOrder() {
+        return orderService.confirmOrder();
     }
 
     @GetMapping

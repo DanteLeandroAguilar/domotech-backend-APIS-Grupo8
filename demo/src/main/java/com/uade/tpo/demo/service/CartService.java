@@ -12,6 +12,8 @@ public interface CartService {
 
     Cart getCartById(Long cartId);
 
+    Cart getActiveCartByLoggedUser();
+
     List<CartItem> getCartItems(Long cartId);
 
     void deactivateCart(Long cartId);
