@@ -17,15 +17,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void updateStock(Long productId, int newStock) {
+    public void decreaseStock(Long productId, int cantidad) {
         Optional<Product> productOpt = productoRepository.findById(productId);
         if (productOpt.isPresent()) {
             Product product = productOpt.get();
-            product.setStock(newStock);
+            if (!product.hasSufficientStock(cantidad)) {
+                throw new RuntimeException("Stock insuficiente para la operación");
+            }
+            product.setStock(product.getStock() - cantidad);
             productoRepository.save(product);
         } else {
             throw new RuntimeException("Producto no encontrado");
         }
     }
 }
-

@@ -41,8 +41,7 @@ public class OrderServiceImpl implements OrderService {
         for (CartItem item : items) {
             Product product = productService.getProductById(item.getProduct().getProductId())
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-            if (product.getStock() < item.getAmount()) throw new RuntimeException("Stock insuficiente para el producto " + product.getName());
-            productService.updateStock(product.getProductId(), product.getStock() - item.getAmount());
+            productService.decreaseStock(product.getProductId(), item.getAmount());
             double appliedDiscount = 0.0;
             double subtotal = (product.getPrice() - appliedDiscount) * item.getAmount();
             OrderDetail detail = new OrderDetail(product, item.getAmount(), product.getPrice(), appliedDiscount, subtotal);

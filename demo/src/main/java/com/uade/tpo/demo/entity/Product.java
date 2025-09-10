@@ -40,6 +40,9 @@ public class Product {
 
     private Integer stock;
 
+    public boolean hasSufficientStock(int cantidad) {
+        return this.stock != null && this.stock >= cantidad;
+    }
     private Double discount; // Porcentaje de descuento
 
     @Temporal(TemporalType.TIMESTAMP) 

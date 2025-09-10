@@ -5,6 +5,5 @@ import java.util.Optional;
 
 public interface ProductService {
     Optional<Product> getProductById(Long productId);
-    void updateStock(Long productId, int newStock);
+    void decreaseStock(Long productId, int cantidad);
 }
-
