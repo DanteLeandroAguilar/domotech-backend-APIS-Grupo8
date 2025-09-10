@@ -19,29 +19,16 @@ public class OrderController {
         return orderService.confirmOrder();
     }
 
-    @GetMapping
-    public List<OrderResponseDTO> getAllOrders() {
-        return orderService.getAllOrders();
-    }
-
-    @GetMapping("/user/{userId}")
-    public List<OrderResponseDTO> getOrdersByUserId(@PathVariable Long userId) {
-        return orderService.getOrdersByUserId(userId);
-    }
-
     @GetMapping("/me")
     public List<OrderResponseDTO> getOrdersByLoggedUser() {
         return orderService.getOrdersByLoggedUser();
     }
 
-    @GetMapping("/date")
-    public List<OrderResponseDTO> getOrdersByDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
-        return orderService.getOrdersByDate(date);
-    }
-
-    @GetMapping("/date-range")
-    public List<OrderResponseDTO> getOrdersByDateRange(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
-                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end) {
-        return orderService.getOrdersByDateRange(start, end);
+    @GetMapping
+    public List<OrderResponseDTO> getOrders(
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return orderService.getOrders(userId, startDate, endDate);
     }
 }

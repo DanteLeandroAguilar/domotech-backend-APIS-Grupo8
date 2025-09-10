@@ -12,7 +12,6 @@ import com.uade.tpo.demo.exceptions.EmptyCartException;
 import com.uade.tpo.demo.exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -67,18 +66,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
-        return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
-    }
-
-    @Override
-    public List<OrderResponseDTO> getOrdersByUserId(Long userId) {
-        List<Order> orders = orderRepository.findByUserId(userId);
-        return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
-    }
-
-    @Override
     public List<OrderResponseDTO> getOrdersByLoggedUser() {
         User user = userService.getLoggedUser();
         List<Order> orders = orderRepository.findByUserId(user.getUserId());
@@ -86,14 +73,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> getOrdersByDate(Date date) {
-        List<Order> orders = orderRepository.findByOrderDate(new java.sql.Date(date.getTime()));
-        return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
-    }
-
-    @Override
-    public List<OrderResponseDTO> getOrdersByDateRange(Date startDate, Date endDate) {
-        List<Order> orders = orderRepository.findByOrderDateBetween(startDate, endDate);
+    public List<OrderResponseDTO> getOrders(Long userId, Date startDate, Date endDate) {
+        List<Order> orders = orderRepository.findOrdersBy(userId, startDate, endDate);
         return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
     }
 }
