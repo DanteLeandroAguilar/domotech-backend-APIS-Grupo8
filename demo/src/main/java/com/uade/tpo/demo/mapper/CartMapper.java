@@ -1,4 +1,4 @@
-package com.uade.tpo.demo.entity.mapper;
+package com.uade.tpo.demo.mapper;
 
 import com.uade.tpo.demo.entity.Cart;
 import com.uade.tpo.demo.entity.CartItem;

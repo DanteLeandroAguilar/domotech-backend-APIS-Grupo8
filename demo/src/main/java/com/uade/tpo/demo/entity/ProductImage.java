@@ -1,5 +1,6 @@
 package com.uade.tpo.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,28 +16,36 @@ import java.sql.Blob;
 
 @Entity
 @Data
-@Table(name = "productImages")
+@Table(name = "product_images")
 public class ProductImage {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "image_id")
     private Long imageId;
 
     @ManyToOne
-    @JoinColumn(name = "productId", nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column
+    @Column(name = "image_url")
     private String imageUrl;
 
-    @Column
+    @Column(name = "is_principal")
     private Boolean isPrincipal;
 
     @Lob
-    @Column(name = "imageBlob")
-    private Blob imageBlob; // Blob es un tipo de dato para almacenar datos binarios grandes
+    @Column(name = "image_blob")
+    @JsonIgnore  // No serializar el BLOB en JSON para evitar respuestas enormes
+    private Blob imageBlob;
 
     // Constructor vacío
     public ProductImage() {}
 
+    // Constructor con parámetros principales
+    public ProductImage(Product product, String imageUrl, Boolean isPrincipal) {
+        this.product = product;
+        this.imageUrl = imageUrl;
+        this.isPrincipal = isPrincipal != null ? isPrincipal : false;
+    }
 }

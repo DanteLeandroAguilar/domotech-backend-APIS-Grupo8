@@ -106,4 +106,15 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
         ProductImage image = getImageById(id);
         imagenProductoRepository.delete(image);
     }
+    
+    @Override
+    public ProductImage updateImageUrl(Long imageId, String imageUrl) {
+        Optional<ProductImage> imageOpt = imagenProductoRepository.findById(imageId);
+        if (imageOpt.isPresent()) {
+            ProductImage image = imageOpt.get();
+            image.setImageUrl(imageUrl);
+            return imagenProductoRepository.save(image);
+        }
+        throw new RuntimeException("Image not found with ID: " + imageId);
+    }
 }
