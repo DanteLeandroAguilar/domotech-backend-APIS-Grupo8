@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.uade.tpo.demo.entity.User;
 import com.uade.tpo.demo.entity.dto.UserRegisterRequest;
@@ -129,6 +130,12 @@ public class UserServiceImpl implements UserService {
         return convertToUserResponse(updatedUser);
     }
     
+    @Override
+    public User getLoggedUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(username).orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+    }
+
     /**
      * Convierte una entidad User a UserResponse
      */

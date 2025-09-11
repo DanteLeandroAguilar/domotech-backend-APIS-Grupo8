@@ -1,4 +1,4 @@
-package com.uade.tpo.demo.entity.dto;
+package com.uade.tpo.demo.controllers.auth;
 
 import com.uade.tpo.demo.entity.enums.Role;
 
@@ -13,11 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterRequest {
 
-    // DTO para recibir datos de registro de usuario
-    private String username;
     private String firstname;
     private String lastname;
     private String email;
     private String password;
     private Role role;
+    private String username;
 }

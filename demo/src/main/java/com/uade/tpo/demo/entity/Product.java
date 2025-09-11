@@ -38,6 +38,10 @@ public class Product {
     // Mapeo directo a la columna double de MySQL
     @Column(name = "discount")
     private Double discount = 0.0;
+    
+    public boolean hasSufficientStock(int cantidad) {
+        return this.stock != null && this.stock >= cantidad;
+    }
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate = LocalDateTime.now();

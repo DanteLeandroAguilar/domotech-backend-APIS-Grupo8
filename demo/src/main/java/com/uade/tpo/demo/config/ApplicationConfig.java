@@ -18,12 +18,10 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
-    // Clase de configuración de beans relacionados con la autenticación y usuarios.
     private final UserRepository repository;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // Devuelve el usuario por email, usado para autenticación JWT
         return username -> repository.findByEmail(username)
                 .map(u -> org.springframework.security.core.userdetails.User
                     .withUsername(u.getEmail())
@@ -35,7 +33,6 @@ public class ApplicationConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        // Configura el proveedor de autenticación con el UserDetailsService y el encoder de contraseñas
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -44,13 +41,11 @@ public class ApplicationConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        // Bean para gestionar la autenticación
         return config.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Bean para encriptar contraseñas
         return new BCryptPasswordEncoder();
     }
 

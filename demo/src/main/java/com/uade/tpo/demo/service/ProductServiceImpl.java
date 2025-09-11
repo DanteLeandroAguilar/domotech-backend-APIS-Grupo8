@@ -205,4 +205,19 @@ public class ProductServiceImpl implements ProductService {
         // Por ahora devuelve todos los productos (hasta implementar seller_id)
         return productRepository.findAll(pageable);
     }
+
+    @Override
+    public void decreaseStock(Long productId, int cantidad) {
+        Optional<Product> productOpt = productoRepository.findById(productId);
+        if (productOpt.isPresent()) {
+            Product product = productOpt.get();
+            if (!product.hasSufficientStock(cantidad)) {
+                throw new InsufficientStockException("Stock insuficiente para el producto: " + product.getName());
+            }
+            product.setStock(product.getStock() - cantidad);
+            productoRepository.save(product);
+        } else {
+            throw new ProductNotFoundException("Producto no encontrado con ID: " + productId);
+        }
+    }
 }

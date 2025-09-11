@@ -1,17 +1,20 @@
 package com.uade.tpo.demo.service;
 
 import com.uade.tpo.demo.entity.Cart;
+import com.uade.tpo.demo.entity.CartItem;
+import com.uade.tpo.demo.entity.dto.CartResponseDTO;
+
+import java.util.List;
 
 public interface CartService {
-    
-    public Cart createCart(Long idUsuario);
 
-    public Cart addProduct(Long idCart, Long idProducto, int cantidad);
+    CartResponseDTO updateProductAmount(Long idProduct, int amount);
 
-    public Cart deleteProduct(Long idCart, Long idProducto);
+    Cart getCartById(Long cartId);
 
-    public Cart cleanCart(Long idCart);
+    Cart getActiveCartByLoggedUser();
 
-    public Cart confirmCart(Long idCart);
+    List<CartItem> getCartItems(Long cartId);
 
+    void deactivateCart(Long cartId);
 }

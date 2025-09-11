@@ -1,4 +1,4 @@
-package com.uade.tpo.demo.entity.dto;
+package com.uade.tpo.demo.controllers.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationResponse {
 
-    // DTO para devolver el token JWT tras autenticación
     @JsonProperty("access_token")
     private String accessToken;
 }
