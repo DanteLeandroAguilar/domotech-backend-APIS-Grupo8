@@ -1,6 +1,7 @@
 package com.uade.tpo.demo.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,13 +76,9 @@ public class CartServiceImpl implements CartService {
         }
 
         cart.setItems(items);
+        cart.setLastModifiedDate(new Date());
         cart = cartRepository.save(cart);
         return CartMapper.toCartResponseDTO(cart);
-    }
-
-    @Override
-    public Cart getCartById(Long cartId) {
-        return cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException("Carrito no encontrado con ID: " + cartId));
     }
 
     @Override
@@ -99,9 +96,32 @@ public class CartServiceImpl implements CartService {
     public void deactivateCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException("Carrito no encontrado con ID: " + cartId));
         cart.setActive(false);
+        cart.setLastModifiedDate(new Date());
         cartRepository.save(cart);
     }
     
+    @Override
+    @Transactional
+    public int deactivateExpiredCarts() {
+        long twentyFourHoursAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000);
+        Date cutoffDate = new Date(twentyFourHoursAgo);
+
+        List<Cart> expiredCarts = cartRepository.findActiveCartsOlderThan(cutoffDate);
+
+        if (expiredCarts.isEmpty()) {
+            return 0;
+        }
+
+        List<Long> cartIds = expiredCarts.stream()
+                .map(Cart::getCartId)
+                .toList();
+
+        int deactivatedCount = cartRepository.deactivateCartsByIds(cartIds);
+
+        System.out.println("Carritos inactivados por vencimiento: " + deactivatedCount);
+        return deactivatedCount;
+    }
+
     private Cart getOrCreateActiveCart(Long userId) {
         User usuario = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Optional<Cart> cartOpt = cartRepository.findByUserAndActiveTrue(usuario);
