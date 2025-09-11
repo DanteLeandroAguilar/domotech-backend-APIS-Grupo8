@@ -68,9 +68,10 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(PUT, "/api/images/*/principal").hasRole("SELLER")  // Cambiar imagen principal
             .requestMatchers(DELETE, "/api/images/*").hasRole("SELLER")  // Eliminar imagen
 
-            // Carts: solo BUYER
-            .requestMatchers("/carts/**").hasRole("BUYER")
-
+            // === ORDERS - SOLO SELLER ===
+            .requestMatchers(GET, "/orders").hasRole("SELLER")  // Filtrar órdenes con query params
+            .requestMatchers(POST, "/orders").hasRole("BUYER")  // Crear orden (confirmar carrito)
+            .requestMatchers(PUT, "/orders/me").authenticated()
 
             // Users: permisos específicos
             .requestMatchers(GET, "/users/**").authenticated()

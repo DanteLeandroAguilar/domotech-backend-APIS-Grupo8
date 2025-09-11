@@ -88,6 +88,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    public CartResponseDTO getActiveCartDTOByLoggedUser() {
+        Cart cart = getActiveCartByLoggedUser();
+        return CartMapper.toCartResponseDTO(cart);
+    }
+
+    @Override
     public List<CartItem> getCartItems(Long cartId) {
         return cartItemRepository.findByCartId(cartId);
     }
