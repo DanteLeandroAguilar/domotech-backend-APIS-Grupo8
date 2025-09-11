@@ -138,7 +138,6 @@ public interface ProductService {
      */
     Page<Product> getProductsBySeller(Long sellerId, Pageable pageable);
     
-    Optional<Product> getProductById(Long productId);
     void decreaseStock(Long productId, int cantidad);
 }
 

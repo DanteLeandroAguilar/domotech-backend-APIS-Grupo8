@@ -90,6 +90,7 @@ public class ProductMapper {
                 .collect(Collectors.toList());
             response.setImages(imageResponses);
             
+            
             // Find principal image
             product.getImages().stream()
                 .filter(img -> img.getIsPrincipal() != null && img.getIsPrincipal())

@@ -2,6 +2,8 @@ package com.uade.tpo.demo.service;
 
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Product;
+import com.uade.tpo.demo.exceptions.InsufficientStockException;
+import com.uade.tpo.demo.exceptions.ProductNotFoundException;
 import com.uade.tpo.demo.repository.CategoryRepository;
 import com.uade.tpo.demo.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,14 +210,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void decreaseStock(Long productId, int cantidad) {
-        Optional<Product> productOpt = productoRepository.findById(productId);
+        Optional<Product> productOpt = productRepository.findById(productId);
         if (productOpt.isPresent()) {
             Product product = productOpt.get();
             if (!product.hasSufficientStock(cantidad)) {
                 throw new InsufficientStockException("Stock insuficiente para el producto: " + product.getName());
             }
             product.setStock(product.getStock() - cantidad);
-            productoRepository.save(product);
+            productRepository.save(product);
         } else {
             throw new ProductNotFoundException("Producto no encontrado con ID: " + productId);
         }

@@ -42,8 +42,10 @@ public class OrderServiceImpl implements OrderService {
         double total = 0.0;
         List<OrderDetail> details = new ArrayList<>();
         for (CartItem item : items) {
-            Product product = productService.getProductById(item.getProduct().getProductId())
-                    .orElseThrow(() -> new ProductNotFoundException("Producto no encontrado con ID: " + item.getProduct().getProductId()));
+            Product product = productService.getProductById(item.getProduct().getProductId());
+            if (product == null) {
+                throw new ProductNotFoundException("Producto no encontrado con ID: " + item.getProduct().getProductId());
+            }
             productService.decreaseStock(product.getProductId(), item.getAmount());
             double appliedDiscount = 0.0;
             double subtotal = (product.getPrice() - appliedDiscount) * item.getAmount();
