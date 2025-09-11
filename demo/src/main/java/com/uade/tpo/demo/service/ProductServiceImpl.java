@@ -1,10 +1,12 @@
 package com.uade.tpo.demo.service;
 
+import com.uade.tpo.demo.dto.ProductDto;
 import com.uade.tpo.demo.dto.ProductFilterRequest;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.exceptions.InsufficientStockException;
 import com.uade.tpo.demo.exceptions.ProductNotFoundException;
+import com.uade.tpo.demo.mapper.ProductMapper;
 import com.uade.tpo.demo.repository.CategoryRepository;
 import com.uade.tpo.demo.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class ProductServiceImpl implements ProductService {
     
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductMapper productMapper;
     
     @Override
     public Product createProduct(Product product) {
@@ -67,13 +72,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDto findProductById(Long id){
+        return this.productMapper.toDto(getProductById(id));
+    }
+
+    @Override
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
     
 
     @Override
-    public Page<Product> getProductsWithStock(Pageable pageable) {
+    public Page<ProductDto> getProductsWithStock(Pageable pageable) {
         return productRepository.findProductsWithFilters(
                 null,
                 null,
@@ -85,13 +95,13 @@ public class ProductServiceImpl implements ProductService {
                 true,
                 null,
                 pageable
-        );
+        ).map(productMapper::toDto);
     }
 
     @Override
-    public Page<Product> searchProducts(String searchTerm, Pageable pageable) {
+    public Page<ProductDto> searchProducts(String searchTerm, Pageable pageable) {
         return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndActiveTrue(
-                searchTerm, searchTerm, pageable);
+                searchTerm, searchTerm, pageable).map(productMapper::toDto);
     }
     
     @Override
@@ -186,7 +196,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> getFilteredProducts(ProductFilterRequest filters, Pageable pageable) {
+    public Page<ProductDto> getFilteredProducts(ProductFilterRequest filters, Pageable pageable) {
         return productRepository.findProductsWithFilters(
                 filters.getCategoryId(),
                 filters.getBrand(),
@@ -198,6 +208,6 @@ public class ProductServiceImpl implements ProductService {
                 filters.getWithStock(),
                 filters.getWithDiscount(),
                 pageable
-        );
+        ).map(productMapper::toDto);
     }
 }

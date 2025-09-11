@@ -1,7 +1,6 @@
 package com.uade.tpo.demo.controllers;
 
 import com.uade.tpo.demo.dto.*;
-import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.mapper.ProductMapper;
 import com.uade.tpo.demo.service.ProductService;
@@ -17,12 +16,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*")
 public class ProductController {
     
     @Autowired
@@ -39,7 +36,7 @@ public class ProductController {
      * ACCESO: PÚBLICO (cualquiera puede ver el catálogo)
      */
     @GetMapping("/catalog")
-    public ResponseEntity<Page<ProductResponse>> getProductCatalog(
+    public ResponseEntity<Page<ProductDto>> getProductCatalog(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "name") String sortBy,
@@ -49,9 +46,8 @@ public class ProductController {
             Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Product> products = productService.getProductsWithStock(pageable);
-        Page<ProductResponse> response = products.map(productMapper::toResponse);
-        
+        Page<ProductDto> response = productService.getProductsWithStock(pageable);
+
         return ResponseEntity.ok(response);
     }
     
@@ -61,10 +57,9 @@ public class ProductController {
      * ACCESO: PÚBLICO (cualquiera puede ver detalles del producto)
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
         try {
-            Product product = productService.getProductById(id);
-            ProductResponse response = productMapper.toResponse(product);
+            ProductDto response = productService.findProductById(id);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -77,7 +72,7 @@ public class ProductController {
      * ACCESO: PÚBLICO (cualquiera puede buscar productos)
      */
     @GetMapping("/search")
-    public ResponseEntity<Page<ProductResponse>> searchProducts(
+    public ResponseEntity<Page<ProductDto>> searchProducts(
             @RequestParam String term,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -88,35 +83,13 @@ public class ProductController {
             Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Product> products = productService.searchProducts(term, pageable);
-        Page<ProductResponse> response = products.map(productMapper::toResponse);
+        Page<ProductDto> response = productService.searchProducts(term, pageable);
 
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Filter products with multiple optional criteria (NUEVO ENDPOINT UNIFICADO)
-     * GET /api/products/filter
-     * ACCESO: PÚBLICO (cualquiera puede filtrar productos)
-     *
-     * Parámetros opcionales disponibles:
-     * - categoryId: Filtrar por ID de categoría
-     * - brand: Filtrar por marca (búsqueda parcial)
-     * - minPrice: Precio mínimo
-     * - maxPrice: Precio máximo
-     * - searchTerm: Buscar en nombre o descripción
-     * - compatibility: Filtrar por compatibilidad
-     * - connectionType: Filtrar por tipo de conexión
-     * - withStock: true para productos con stock, false para todos
-     * - withDiscount: true para productos con descuento, false para todos
-     *
-     * Ejemplos de uso:
-     * /api/products/filter?categoryId=1&withStock=true
-     * /api/products/filter?brand=samsung&minPrice=100&maxPrice=500
-     * /api/products/filter?searchTerm=smartphone&withStock=true&withDiscount=true
-     */
     @GetMapping("/filter")
-    public ResponseEntity<Page<ProductResponse>> getFilteredProducts(
+    public ResponseEntity<Page<ProductDto>> getFilteredProducts(
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) Double minPrice,
@@ -142,9 +115,8 @@ public class ProductController {
             
             Pageable pageable = PageRequest.of(page, size, sort);
 
-             Page<Product> products = productService.getFilteredProducts(filters, pageable);
-            Page<ProductResponse> response = products.map(productMapper::toResponse);
-            
+            Page<ProductDto> response = productService.getFilteredProducts(filters, pageable);
+
             return ResponseEntity.ok(response);
 
         } catch (RuntimeException e) {
@@ -178,7 +150,6 @@ public class ProductController {
      * ACCESO: SOLO VENDEDOR (vista completa para gestión)
      */
     @GetMapping
-    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Page<ProductResponse>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,

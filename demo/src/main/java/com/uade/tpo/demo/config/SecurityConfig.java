@@ -42,12 +42,14 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             // === PRODUCTOS - LECTURA PÚBLICA (BUYER + SELLER + PÚBLICO) ===
             .requestMatchers(GET, "/api/products/catalog").permitAll()  // Catálogo público
             .requestMatchers(GET, "/api/products/search").permitAll()  // Búsqueda pública
+            .requestMatchers(GET, "/api/products/filter").permitAll()  // Filtros unificados
+            .requestMatchers(GET, "/api/products/filter/**").permitAll()  // Filtros legacy
             .requestMatchers(GET, "/api/products/category/**").permitAll()  // Por categoría
-            .requestMatchers(GET, "/api/products/filter/**").permitAll()  // Filtros
             .requestMatchers(GET, "/api/products/{id}").permitAll()  // Detalle producto
             .requestMatchers(GET, "/api/products/{id}/stock/**").permitAll()  // Verificar stock
             
             // === PRODUCTOS - GESTIÓN (SOLO SELLER) ===
+            .requestMatchers(GET, "/api/products").hasRole("SELLER")  // Lista completa (admin view)
             .requestMatchers(POST, "/api/products").hasRole("SELLER")  // Crear producto
             .requestMatchers(PUT, "/api/products/**").hasRole("SELLER")  // Actualizar producto
             .requestMatchers(PATCH, "/api/products/*/stock").hasRole("SELLER")  // Actualizar stock
@@ -60,20 +62,15 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(GET, "/api/productos/*/images/principal").permitAll()  // Ver imagen principal
             .requestMatchers(GET, "/api/images/*/download").permitAll()  // Descargar imagen
             .requestMatchers(GET, "/api/images/*").permitAll()  // Info de imagen
-            
+
             // === IMÁGENES - GESTIÓN (SOLO SELLER) ===
             .requestMatchers(POST, "/api/productos/*/images").hasRole("SELLER")  // Subir imagen
             .requestMatchers(PUT, "/api/images/*/principal").hasRole("SELLER")  // Cambiar imagen principal
             .requestMatchers(DELETE, "/api/images/*").hasRole("SELLER")  // Eliminar imagen
-            
+
             // Carts: solo BUYER
             .requestMatchers("/carts/**").hasRole("BUYER")
 
-            // Imágenes: lectura pública, escritura SELLER
-            .requestMatchers(GET,  "/api/productos/*/images/**", "/api/images/**").permitAll()
-            .requestMatchers(POST, "/api/productos/*/images").hasRole("SELLER")
-            .requestMatchers(PUT,  "/api/images/**").hasRole("SELLER")
-            .requestMatchers(DELETE, "/api/images/**").hasRole("SELLER")
 
             // Users: permisos específicos
             .requestMatchers(GET, "/users/**").authenticated()

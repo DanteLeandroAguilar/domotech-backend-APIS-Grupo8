@@ -1,5 +1,6 @@
 package com.uade.tpo.demo.service;
 
+import com.uade.tpo.demo.dto.ProductDto;
 import com.uade.tpo.demo.dto.ProductFilterRequest;
 import com.uade.tpo.demo.entity.Product;
 import org.springframework.data.domain.Page;
@@ -14,13 +15,15 @@ public interface ProductService {
 
     Product getProductById(Long id);
 
+    ProductDto findProductById(Long id);
+
     Page<Product> getAllProducts(Pageable pageable);
 
-    Page<Product> getProductsWithStock(Pageable pageable);
+    Page<ProductDto> getProductsWithStock(Pageable pageable);
 
-    Page<Product> searchProducts(String searchTerm, Pageable pageable);
+    Page<ProductDto> searchProducts(String searchTerm, Pageable pageable);
 
-    Page<Product> getFilteredProducts(ProductFilterRequest filters, Pageable pageable);
+    Page<ProductDto> getFilteredProducts(ProductFilterRequest filters, Pageable pageable);
 
     Product updateProduct(Long id, Product updatedProduct);
 

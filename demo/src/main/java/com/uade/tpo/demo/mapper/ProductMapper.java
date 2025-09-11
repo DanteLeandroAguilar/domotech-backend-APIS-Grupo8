@@ -3,7 +3,6 @@ package com.uade.tpo.demo.mapper;
 import com.uade.tpo.demo.dto.*;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Product;
-import com.uade.tpo.demo.entity.ProductImage;
 import com.uade.tpo.demo.entity.enums.ConectionType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,5 +169,59 @@ public class ProductMapper {
             category.setCategoryId(request.getCategoryId());
             product.setCategory(category);
         }
+    }
+
+    /**
+     * Convert Product entity to ProductListDto (optimized for lists, no circular references)
+     */
+    public ProductDto toDto(Product product) {
+        if (product == null) {
+            return null;
+        }
+
+        ProductDto dto = new ProductDto();
+        dto.setProductId(product.getProductId());
+        dto.setName(product.getName());
+        dto.setDescription(product.getDescription());
+        dto.setPrice(product.getPrice());
+        dto.setDiscount(product.getDiscount());
+        dto.setActive(product.getActive());
+        dto.setBrand(product.getBrand());
+        dto.setCompatibility(product.getCompatibility());
+        dto.setConnectionType(product.getConectionType() != null ?
+            product.getConectionType().toString() : null);
+
+        if (product.getCategory() != null) {
+            dto.setCategory(new CategorySummaryDto(
+                    product.getCategory().getCategoryId(),
+                    product.getCategory().getName(),
+                    product.getCategory().getDescription()
+            ));
+        }
+
+        if (product.getImages() != null && !product.getImages().isEmpty()) {
+            List<ProductImageDto> imageDtos = product.getImages().stream()
+                .map(img -> ProductImageDto.from(
+                    img.getImageId(),
+                    img.getImageUrl(),
+                    img.getIsPrincipal()
+                ))
+                .collect(Collectors.toList());
+            dto.setImages(imageDtos);
+
+            product.getImages().stream()
+                .filter(img -> img.getIsPrincipal() != null && img.getIsPrincipal())
+                .findFirst()
+                .ifPresent(principalImg ->
+                    dto.setPrincipalImage(ProductImageDto.from(
+                        principalImg.getImageId(),
+                        principalImg.getImageUrl(),
+                        principalImg.getIsPrincipal()
+                    )));
+        }
+
+        dto.calculateFields(product.getStock());
+
+        return dto;
     }
 }
