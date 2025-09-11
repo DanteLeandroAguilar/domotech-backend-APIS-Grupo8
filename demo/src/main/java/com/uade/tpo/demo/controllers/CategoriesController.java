@@ -15,6 +15,8 @@ import com.uade.tpo.demo.service.CategoryServiceImpl;
 import com.uade.tpo.demo.exceptions.CategoryNotFoundException;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,22 +39,17 @@ public class CategoriesController {
 
     // Defino el endpoint para obtener todas las categorias
     @GetMapping
-    public ResponseEntity<Page<CategorySimpleDTO>> getCategories(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        Page<Category> categories;
-        if (page == null || size == null) {
-            categories = categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE));
-        } else {
-            categories = categoryService.getCategories(PageRequest.of(page, size));
+    public ResponseEntity<List<CategorySimpleDTO>> getCategories() {
+        List<Category> categories = categoryService.getAllCategories();
+        List<CategorySimpleDTO> dtoList = new ArrayList<>();
+        for (Category cat : categories) {
+            dtoList.add(new CategorySimpleDTO(
+                cat.getCategoryId(),
+                cat.getName(),
+                cat.getDescription()
+            ));
         }
-        // Mapeo cada Category a CategorySimpleDTO (sin message y success)
-        Page<CategorySimpleDTO> dtoPage = categories.map(cat -> new CategorySimpleDTO(
-            cat.getCategoryId(),
-            cat.getName(),
-            cat.getDescription()
-        ));
-        return ResponseEntity.ok(dtoPage);
+        return ResponseEntity.ok(dtoList);
     }
 
     // Defino el endpoint para obtener una categoria por id
@@ -61,9 +58,7 @@ public class CategoriesController {
         Optional<Category> result = categoryService.getCategoryById(categoryId);
         if (result.isPresent()) {
             Category cat = result.get();
-            CategoryResponseDTO dto = new CategoryResponseDTO(
-                true,
-                null,
+            CategorySimpleDTO dto = new CategorySimpleDTO(
                 cat.getCategoryId(),
                 cat.getName(),
                 cat.getDescription()
