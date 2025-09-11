@@ -10,9 +10,15 @@ public interface CartService {
 
     CartResponseDTO updateProductAmount(Long idProduct, int amount);
 
-    Cart getCartById(Long cartId);
+    Cart getActiveCartByLoggedUser();
 
     List<CartItem> getCartItems(Long cartId);
 
     void deactivateCart(Long cartId);
+
+    /**
+     * Inactiva carritos que han estado inactivos por más de 24 horas
+     * @return número de carritos inactivados
+     */
+    int deactivateExpiredCarts();
 }

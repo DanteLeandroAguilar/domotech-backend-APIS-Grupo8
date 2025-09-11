@@ -1,9 +1,6 @@
 package com.uade.tpo.demo.entity.dto;
 
 import lombok.Data;
-import java.util.Date;
-import java.util.List;
-import com.uade.tpo.demo.entity.enums.OrderStatus;
 
 @Data
 public class OrderDetailResponseDTO {

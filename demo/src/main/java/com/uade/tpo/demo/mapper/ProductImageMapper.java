@@ -1,8 +1,8 @@
 package com.uade.tpo.demo.mapper;
 
-import com.uade.tpo.demo.dto.CategorySummaryDto;
-import com.uade.tpo.demo.dto.ProductImageResponse;
-import com.uade.tpo.demo.dto.ProductSummaryDto;
+import com.uade.tpo.demo.entity.dto.CategorySummaryDto;
+import com.uade.tpo.demo.entity.dto.ProductImageResponse;
+import com.uade.tpo.demo.entity.dto.ProductSummaryDto;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.entity.ProductImage;

@@ -1,23 +1,12 @@
 package com.uade.tpo.demo.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.uade.tpo.demo.entity.enums.ConectionType;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -27,40 +16,76 @@ public class Product {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "product_id")
     private Long productId;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column(nullable = false, length = 255)
     private String name;
 
+    @Column(length = 255)
     private String description;
 
+    @Column(nullable = false)
     private Double price;
 
+    @Column(nullable = false)
     private Integer stock;
 
-    private Double discount; // Porcentaje de descuento
+    // Mapeo directo a la columna double de MySQL
+    @Column(name = "discount")
+    private Double discount = 0.0;
+    
+    public boolean hasSufficientStock(int cantidad) {
+        return this.getStock() != null && this.getStock() >= cantidad && this.getActive();
+    }
 
-    @Temporal(TemporalType.TIMESTAMP) 
-    private Date creationDate = new Date();
+    @Column(name = "creation_date")
+    private LocalDateTime creationDate = LocalDateTime.now();
 
-    private Boolean active;
+    @Column(nullable = false)
+    private Boolean active = true;
 
+    @Column(length = 255)
     private String brand;
 
+    @Column(length = 255)
     private String compatibility;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "conection_type")
     private ConectionType conectionType;
 
-    @OneToMany(mappedBy = "product")
-    private List<ProductImage> imagenes;
+    // CORRECTED: Using consistent naming - "images" instead of "imagenes"
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<ProductImage> images;
 
-    @OneToMany(mappedBy = "product")
-    private List<CartItem> carritoItems;
+    // CORRECTED: Using consistent naming - "cartItems" instead of "carritoItems"
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CartItem> cartItems;
 
-    @OneToMany(mappedBy = "product")
-    private List<OrderDetail> detallePedidos;
+    // CORRECTED: Using consistent naming - "orderDetails" instead of "detallePedidos"
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<OrderDetail> orderDetails;
+
+    // Constructor vacío para JPA
+    public Product() {}
+
+    // Constructor con parámetros principales
+    public Product(String name, String description, Double price, Integer stock, Category category) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+        this.category = category;
+        this.discount = 0.0;
+        this.active = true;
+        this.creationDate = LocalDateTime.now();
+    }
 }
