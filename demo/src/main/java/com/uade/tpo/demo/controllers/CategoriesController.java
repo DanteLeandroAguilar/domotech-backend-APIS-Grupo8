@@ -1,7 +1,6 @@
 package com.uade.tpo.demo.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.tpo.demo.entity.Category;
@@ -11,7 +10,6 @@ import com.uade.tpo.demo.entity.dto.CategorySimpleDTO;
 import com.uade.tpo.demo.entity.dto.ErrorResponseDTO;
 import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
 import com.uade.tpo.demo.service.CategoryService;
-import com.uade.tpo.demo.service.CategoryServiceImpl;
 import com.uade.tpo.demo.exceptions.CategoryNotFoundException;
 
 import java.net.URI;
@@ -20,8 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

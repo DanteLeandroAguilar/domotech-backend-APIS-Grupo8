@@ -1,7 +1,7 @@
 package com.uade.tpo.demo.controllers;
 
-import com.uade.tpo.demo.dto.*;
 import com.uade.tpo.demo.entity.Product;
+import com.uade.tpo.demo.entity.dto.*;
 import com.uade.tpo.demo.mapper.ProductMapper;
 import com.uade.tpo.demo.service.ProductService;
 import jakarta.validation.Valid;

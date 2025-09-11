@@ -1,6 +1,6 @@
 package com.uade.tpo.demo.controllers;
 
-import com.uade.tpo.demo.dto.ProductImageResponse;
+import com.uade.tpo.demo.entity.dto.ProductImageResponse;
 import com.uade.tpo.demo.entity.ProductImage;
 import com.uade.tpo.demo.mapper.ProductImageMapper;
 import com.uade.tpo.demo.service.ImagenProductoService;

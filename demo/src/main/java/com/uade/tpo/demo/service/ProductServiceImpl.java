@@ -1,7 +1,7 @@
 package com.uade.tpo.demo.service;
 
-import com.uade.tpo.demo.dto.ProductDto;
-import com.uade.tpo.demo.dto.ProductFilterRequest;
+import com.uade.tpo.demo.entity.dto.ProductDto;
+import com.uade.tpo.demo.entity.dto.ProductFilterRequest;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.exceptions.InsufficientStockException;

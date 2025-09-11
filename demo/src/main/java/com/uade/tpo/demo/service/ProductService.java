@@ -1,13 +1,10 @@
 package com.uade.tpo.demo.service;
 
-import com.uade.tpo.demo.dto.ProductDto;
-import com.uade.tpo.demo.dto.ProductFilterRequest;
+import com.uade.tpo.demo.entity.dto.ProductDto;
+import com.uade.tpo.demo.entity.dto.ProductFilterRequest;
 import com.uade.tpo.demo.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface ProductService {
 

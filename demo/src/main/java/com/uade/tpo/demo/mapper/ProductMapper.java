@@ -1,8 +1,8 @@
 package com.uade.tpo.demo.mapper;
 
-import com.uade.tpo.demo.dto.*;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Product;
+import com.uade.tpo.demo.entity.dto.*;
 import com.uade.tpo.demo.entity.enums.ConectionType;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,15 +1,12 @@
 package com.uade.tpo.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.uade.tpo.demo.entity.dto.UserRegisterRequest;
-import com.uade.tpo.demo.entity.dto.UserLoginRequest;
 import com.uade.tpo.demo.entity.dto.UserResponse;
 import com.uade.tpo.demo.entity.dto.UserUpdateRequest;
 import com.uade.tpo.demo.entity.dto.UserRoleUpdateRequest;

@@ -1,4 +1,4 @@
-package com.uade.tpo.demo.dto;
+package com.uade.tpo.demo.entity.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
