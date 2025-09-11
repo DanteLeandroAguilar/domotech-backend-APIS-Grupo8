@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
-import com.uade.tpo.demo.entity.mapper.OrderMapper;
+import com.uade.tpo.demo.mapper.OrderMapper;
 import com.uade.tpo.demo.entity.dto.OrderResponseDTO;
 
 @Service

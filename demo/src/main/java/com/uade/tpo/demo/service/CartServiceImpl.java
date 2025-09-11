@@ -13,7 +13,7 @@ import com.uade.tpo.demo.entity.CartItem;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.entity.User;
 import com.uade.tpo.demo.entity.dto.CartResponseDTO;
-import com.uade.tpo.demo.entity.mapper.CartMapper;
+import com.uade.tpo.demo.mapper.CartMapper;
 import com.uade.tpo.demo.repository.CartItemRepository;
 import com.uade.tpo.demo.repository.CartRepository;
 import com.uade.tpo.demo.repository.ProductoRepository;
