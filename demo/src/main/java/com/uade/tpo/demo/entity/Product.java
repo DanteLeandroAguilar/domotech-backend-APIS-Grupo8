@@ -40,7 +40,7 @@ public class Product {
     private Double discount = 0.0;
     
     public boolean hasSufficientStock(int cantidad) {
-        return this.stock != null && this.stock >= cantidad;
+        return this.getStock() != null && this.getStock() >= cantidad && this.getActive();
     }
 
     @Column(name = "creation_date")

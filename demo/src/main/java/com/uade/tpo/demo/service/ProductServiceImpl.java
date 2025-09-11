@@ -1,5 +1,6 @@
 package com.uade.tpo.demo.service;
 
+import com.uade.tpo.demo.dto.ProductFilterRequest;
 import com.uade.tpo.demo.entity.Category;
 import com.uade.tpo.demo.entity.Product;
 import com.uade.tpo.demo.exceptions.InsufficientStockException;
@@ -64,45 +65,33 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
     }
-    
-    @Override
-    public Optional<Product> findById(Long id) {
-        return productRepository.findById(id);
-    }
-    
+
     @Override
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
     
-    @Override
-    public Page<Product> getProductsByCategory(Long categoryId, Pageable pageable) {
-        Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
-        if (!categoryOpt.isPresent()) {
-            throw new RuntimeException("Category not found");
-        }
-        return productRepository.findByCategory(categoryOpt.get(), pageable);
-    }
-    
+
     @Override
     public Page<Product> getProductsWithStock(Pageable pageable) {
-        return productRepository.findByStockGreaterThanAndActiveTrue(0, pageable);
+        return productRepository.findProductsWithFilters(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true,
+                null,
+                pageable
+        );
     }
-    
+
     @Override
     public Page<Product> searchProducts(String searchTerm, Pageable pageable) {
         return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndActiveTrue(
                 searchTerm, searchTerm, pageable);
-    }
-    
-    @Override
-    public Page<Product> getProductsByPriceRange(Double minPrice, Double maxPrice, Pageable pageable) {
-        return productRepository.findByPriceBetweenAndActiveTrue(minPrice, maxPrice, pageable);
-    }
-    
-    @Override
-    public Page<Product> getProductsByBrand(String brand, Pageable pageable) {
-        return productRepository.findByBrandIgnoreCaseAndActiveTrue(brand, pageable);
     }
     
     @Override
@@ -179,34 +168,7 @@ public class ProductServiceImpl implements ProductService {
         product.setActive(false);
         productRepository.save(product);
     }
-    
-    @Override
-    public boolean hasEnoughStock(Long id, Integer quantity) {
-        Product product = getProductById(id);
-        return product.getStock() >= quantity && product.getActive();
-    }
-    
-    @Override
-    public boolean reserveStock(Long id, Integer quantity) {
-        Product product = getProductById(id);
-        
-        if (!hasEnoughStock(id, quantity)) {
-            return false;
-        }
-        
-        product.setStock(product.getStock() - quantity);
-        productRepository.save(product);
-        return true;
-    }
-    
-    @Override
-    public Page<Product> getProductsBySeller(Long sellerId, Pageable pageable) {
-        // Si implementas seller_id en Product, usar este método
-        // return productRepository.findBySellerId(sellerId, pageable);
-        
-        // Por ahora devuelve todos los productos (hasta implementar seller_id)
-        return productRepository.findAll(pageable);
-    }
+
 
     @Override
     public void decreaseStock(Long productId, int cantidad) {
@@ -221,5 +183,21 @@ public class ProductServiceImpl implements ProductService {
         } else {
             throw new ProductNotFoundException("Producto no encontrado con ID: " + productId);
         }
+    }
+
+    @Override
+    public Page<Product> getFilteredProducts(ProductFilterRequest filters, Pageable pageable) {
+        return productRepository.findProductsWithFilters(
+                filters.getCategoryId(),
+                filters.getBrand(),
+                filters.getMinPrice(),
+                filters.getMaxPrice(),
+                filters.getSearchTerm(),
+                filters.getCompatibility(),
+                filters.getConnectionType(),
+                filters.getWithStock(),
+                filters.getWithDiscount(),
+                pageable
+        );
     }
 }

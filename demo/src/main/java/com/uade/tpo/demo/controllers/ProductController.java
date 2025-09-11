@@ -72,7 +72,7 @@ public class ProductController {
     }
     
     /**
-     * Search products
+     * Search products (mantenido por compatibilidad)
      * GET /api/products/search
      * ACCESO: PÚBLICO (cualquiera puede buscar productos)
      */
@@ -83,140 +83,72 @@ public class ProductController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "name") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirection) {
-        
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ? 
+
+        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
             Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-        
+
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Product> products = productService.searchProducts(term, pageable);
         Page<ProductResponse> response = products.map(productMapper::toResponse);
-        
+
         return ResponseEntity.ok(response);
     }
-    
+
     /**
-     * Get products by category
-     * GET /api/products/category/{categoryId}
-     * ACCESO: PÚBLICO (cualquiera puede filtrar por categoría)
+     * Filter products with multiple optional criteria (NUEVO ENDPOINT UNIFICADO)
+     * GET /api/products/filter
+     * ACCESO: PÚBLICO (cualquiera puede filtrar productos)
+     *
+     * Parámetros opcionales disponibles:
+     * - categoryId: Filtrar por ID de categoría
+     * - brand: Filtrar por marca (búsqueda parcial)
+     * - minPrice: Precio mínimo
+     * - maxPrice: Precio máximo
+     * - searchTerm: Buscar en nombre o descripción
+     * - compatibility: Filtrar por compatibilidad
+     * - connectionType: Filtrar por tipo de conexión
+     * - withStock: true para productos con stock, false para todos
+     * - withDiscount: true para productos con descuento, false para todos
+     *
+     * Ejemplos de uso:
+     * /api/products/filter?categoryId=1&withStock=true
+     * /api/products/filter?brand=samsung&minPrice=100&maxPrice=500
+     * /api/products/filter?searchTerm=smartphone&withStock=true&withDiscount=true
      */
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<Page<ProductResponse>> getProductsByCategory(
-            @PathVariable Long categoryId,
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ProductResponse>> getFilteredProducts(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) String compatibility,
+            @RequestParam(required = false) String connectionType,
+            @RequestParam(required = false) Boolean withStock,
+            @RequestParam(required = false) Boolean withDiscount,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "name") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirection) {
         
         try {
-            Sort sort = sortDirection.equalsIgnoreCase("desc") ? 
+            ProductFilterRequest filters = new ProductFilterRequest(
+                categoryId, brand, minPrice, maxPrice, searchTerm,
+                compatibility, connectionType, withStock, withDiscount
+            );
+
+            Sort sort = sortDirection.equalsIgnoreCase("desc") ?
                 Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
             
             Pageable pageable = PageRequest.of(page, size, sort);
-            Page<Product> products = productService.getProductsByCategory(categoryId, pageable);
+
+             Page<Product> products = productService.getFilteredProducts(filters, pageable);
             Page<ProductResponse> response = products.map(productMapper::toResponse);
             
             return ResponseEntity.ok(response);
+
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-    
-    /**
-     * Filter products by price range
-     * GET /api/products/filter/price
-     * ACCESO: PÚBLICO (cualquiera puede filtrar por precio)
-     */
-    @GetMapping("/filter/price")
-    public ResponseEntity<Page<ProductResponse>> getProductsByPriceRange(
-            @RequestParam Double minPrice,
-            @RequestParam Double maxPrice,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDirection) {
-        
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ? 
-            Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-        
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Product> products = productService.getProductsByPriceRange(minPrice, maxPrice, pageable);
-        Page<ProductResponse> response = products.map(productMapper::toResponse);
-        
-        return ResponseEntity.ok(response);
-    }
-    
-    /**
-     * Filter products by brand
-     * GET /api/products/filter/brand/{brand}
-     * ACCESO: PÚBLICO (cualquiera puede filtrar por marca)
-     */
-    @GetMapping("/filter/brand/{brand}")
-    public ResponseEntity<Page<ProductResponse>> getProductsByBrand(
-            @PathVariable String brand,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDirection) {
-        
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ? 
-            Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-        
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Product> products = productService.getProductsByBrand(brand, pageable);
-        Page<ProductResponse> response = products.map(productMapper::toResponse);
-        
-        return ResponseEntity.ok(response);
-    }
-    
-    /**
-     * Check product stock availability with detailed information
-     * GET /api/products/{id}/stock/{quantity}
-     * ACCESO: PÚBLICO (cualquiera puede verificar stock)
-     */
-    @GetMapping("/{id}/stock/{quantity}")
-    public ResponseEntity<StockVerificationResponse> checkStockAvailability(
-            @PathVariable Long id, 
-            @PathVariable Integer quantity) {
-        
-        try {
-            Optional<Product> productOpt = productService.findById(id);
-            
-            if (productOpt.isEmpty()) {
-                StockVerificationResponse response = StockVerificationResponse.notFound(id, quantity);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-            
-            Product product = productOpt.get();
-            
-            if (!product.getActive()) {
-                StockVerificationResponse response = StockVerificationResponse.notFound(id, quantity);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-            
-            if (product.getStock() >= quantity) {
-                StockVerificationResponse response = StockVerificationResponse.available(
-                    product.getProductId(), 
-                    product.getName(), 
-                    quantity, 
-                    product.getStock()
-                );
-                return ResponseEntity.ok(response);
-            } else {
-                StockVerificationResponse response = StockVerificationResponse.insufficient(
-                    product.getProductId(), 
-                    product.getName(), 
-                    quantity, 
-                    product.getStock()
-                );
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-            }
-            
-        } catch (Exception e) {
-            StockVerificationResponse response = new StockVerificationResponse(
-                id, "Error del servidor", quantity, 0, false, 
-                "Error interno del servidor al verificar stock", "ERROR"
-            );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
     
@@ -350,17 +282,7 @@ public class ProductController {
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Map<String, String>> deleteProduct(@PathVariable Long id) {
         try {
-            Optional<Product> productOpt = productService.findById(id);
-            
-            if (productOpt.isEmpty()) {
-                Map<String, String> errorResponse = new HashMap<>();
-                errorResponse.put("error", "Producto no encontrado");
-                errorResponse.put("message", String.format("No existe un producto con ID %d", id));
-                errorResponse.put("status", "NOT_FOUND");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-            }
-            
-            Product product = productOpt.get();
+            Product product = productService.getProductById(id);
             
             if (!product.getActive()) {
                 Map<String, String> warningResponse = new HashMap<>();
