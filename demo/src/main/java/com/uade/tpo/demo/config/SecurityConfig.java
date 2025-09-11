@@ -68,16 +68,19 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(PUT, "/api/images/*/principal").hasRole("SELLER")  // Cambiar imagen principal
             .requestMatchers(DELETE, "/api/images/*").hasRole("SELLER")  // Eliminar imagen
 
-            // === ORDERS - SOLO SELLER ===
-            .requestMatchers(GET, "/orders").hasRole("SELLER")  // Filtrar órdenes con query params
-            .requestMatchers(POST, "/orders").hasRole("BUYER")  // Crear orden (confirmar carrito)
-            .requestMatchers(PUT, "/orders/me").authenticated()
-
             // Users: permisos específicos
             .requestMatchers(GET, "/users/**").authenticated()
             .requestMatchers(PUT, "/users/*/role").hasRole("SELLER")   // Solo SELLER puede cambiar roles
             .requestMatchers(DELETE, "/users/**").hasRole("SELLER")    // Solo SELLER puede eliminar usuarios
             .requestMatchers(PUT, "/users/**").hasRole("SELLER")       // Actualizar usuario (propio o SELLER)
+
+            .requestMatchers(GET, "/carts").hasRole("SELLER")
+            .requestMatchers(PATCH, "/carts/update-product").hasRole("BUYER")
+            .requestMatchers(GET, "/carts/me").hasRole("BUYER")
+
+            .requestMatchers(GET, "/orders").hasRole("SELLER")
+            .requestMatchers(POST, "/orders/confirm").hasRole("BUYER")
+            .requestMatchers(GET, "/orders/me").hasRole("BUYER")
 
             // Todo lo demás, autenticado
             .anyRequest().authenticated()

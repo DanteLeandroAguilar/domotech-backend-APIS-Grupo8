@@ -146,6 +146,16 @@ public class CartServiceImpl implements CartService {
         return deletedCount;
     }
 
+    @Override
+    public List<CartResponseDTO> getCarts(Long userId, Boolean active, Date startDate, Date endDate) {
+
+        List<Cart> carts = cartRepository.findCartsWithFilters(userId, active, startDate, endDate);
+
+        return carts.stream()
+                .map(CartMapper::toCartResponseDTO)
+                .toList();
+    }
+
     private Cart getOrCreateActiveCart(Long userId) {
         User usuario = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Optional<Cart> cartOpt = cartRepository.findByUserAndActiveTrue(usuario);

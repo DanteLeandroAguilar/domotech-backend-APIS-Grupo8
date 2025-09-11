@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.query.Param;
 
 import com.uade.tpo.demo.entity.Cart;
 import com.uade.tpo.demo.entity.User;
@@ -30,4 +31,16 @@ public interface CartRepository extends JpaRepository<Cart, Long>{
     @Modifying
     @Query("UPDATE Cart c SET c.active = false WHERE c.cartId IN ?1")
     int deactivateCartsByIds(List<Long> cartIds);
+
+    // Buscar carritos con filtros opcionales
+    @Query("SELECT c FROM Cart c WHERE " +
+           "(:userId IS NULL OR c.user.userId = :userId) AND " +
+           "(:active IS NULL OR c.active = :active) AND " +
+           "(:startDate IS NULL OR c.createdDate >= :startDate) AND " +
+           "(:endDate IS NULL OR c.createdDate <= :endDate)")
+    List<Cart> findCartsWithFilters(
+            @Param("userId") Long userId,
+            @Param("active") Boolean active,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate);
 }

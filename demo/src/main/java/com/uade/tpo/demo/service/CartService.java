@@ -4,6 +4,7 @@ import com.uade.tpo.demo.entity.Cart;
 import com.uade.tpo.demo.entity.CartItem;
 import com.uade.tpo.demo.entity.dto.CartResponseDTO;
 
+import java.util.Date;
 import java.util.List;
 
 public interface CartService {
@@ -21,5 +22,6 @@ public interface CartService {
     int deactivateExpiredCarts();
 
     int deleteOldInactiveCarts();
-}
 
+    List<CartResponseDTO> getCarts(Long userId, Boolean active, Date startDate, Date endDate);
+}
