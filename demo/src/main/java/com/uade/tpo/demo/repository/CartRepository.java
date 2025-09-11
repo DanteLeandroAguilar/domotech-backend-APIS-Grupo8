@@ -22,6 +22,10 @@ public interface CartRepository extends JpaRepository<Cart, Long>{
     @Query("SELECT c FROM Cart c WHERE c.active = true AND c.lastModifiedDate < ?1")
     List<Cart> findActiveCartsOlderThan(Date cutoffDate);
 
+    // Busca carritos inactivos que no han sido modificados en los últimos 30 días
+    @Query("SELECT c FROM Cart c WHERE c.active = false AND c.lastModifiedDate < ?1")
+    List<Cart> findInactiveCartsOlderThan(Date cutoffDate);
+
     // Actualiza carritos a inactivos por sus IDs
     @Modifying
     @Query("UPDATE Cart c SET c.active = false WHERE c.cartId IN ?1")

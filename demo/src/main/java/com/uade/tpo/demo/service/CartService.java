@@ -19,4 +19,7 @@ public interface CartService {
     void deactivateCart(Long cartId);
 
     int deactivateExpiredCarts();
+
+    int deleteOldInactiveCarts();
 }
+

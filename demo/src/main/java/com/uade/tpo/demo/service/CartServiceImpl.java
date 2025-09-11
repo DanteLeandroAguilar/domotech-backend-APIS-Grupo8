@@ -124,8 +124,26 @@ public class CartServiceImpl implements CartService {
 
         int deactivatedCount = cartRepository.deactivateCartsByIds(cartIds);
 
-        System.out.println("Carritos inactivados por vencimiento: " + deactivatedCount);
         return deactivatedCount;
+    }
+
+    @Override
+    @Transactional
+    public int deleteOldInactiveCarts() {
+        long thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000);
+        Date cutoffDate = new Date(thirtyDaysAgo);
+
+        List<Cart> oldInactiveCarts = cartRepository.findInactiveCartsOlderThan(cutoffDate);
+
+        if (oldInactiveCarts.isEmpty()) {
+            return 0;
+        }
+
+        cartRepository.deleteAll(oldInactiveCarts);
+
+        int deletedCount = oldInactiveCarts.size();
+        System.out.println("Carritos eliminados permanentemente (con cascading JPA): " + deletedCount);
+        return deletedCount;
     }
 
     private Cart getOrCreateActiveCart(Long userId) {
