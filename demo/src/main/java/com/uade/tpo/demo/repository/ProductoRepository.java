@@ -1,11 +1,76 @@
 package com.uade.tpo.demo.repository;
 
+import com.uade.tpo.demo.entity.Category;
+import com.uade.tpo.demo.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.uade.tpo.demo.entity.Product;
-
 @Repository
-public interface ProductoRepository extends JpaRepository<Product, Long>{
+public interface ProductoRepository extends JpaRepository<Product, Long> {
     
+    /**
+     * Find products by category
+     */
+    Page<Product> findByCategory(Category category, Pageable pageable);
+    
+    /**
+     * Find products with stock and active
+     */
+    Page<Product> findByStockGreaterThanAndActiveTrue(Integer stock, Pageable pageable);
+    
+    /**
+     * Search products by name or description (case insensitive)
+     */
+    @Query("SELECT p FROM Product p WHERE " +
+           "(LOWER(p.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "LOWER(p.description) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) AND " +
+           "p.active = true")
+    Page<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndActiveTrue(
+            @Param("searchTerm") String searchTerm1, 
+            @Param("searchTerm") String searchTerm2, 
+            Pageable pageable);
+    
+    /**
+     * Find products by price range
+     */
+    Page<Product> findByPriceBetweenAndActiveTrue(Double minPrice, Double maxPrice, Pageable pageable);
+    
+    /**
+     * Find products by brand (case insensitive)
+     */
+    Page<Product> findByBrandIgnoreCaseAndActiveTrue(String brand, Pageable pageable);
+    
+    /**
+     * Find products by seller (if you implement seller_id field)
+     */
+    // Page<Product> findBySellerIdAndActiveTrue(Long sellerId, Pageable pageable);
+    
+    /**
+     * Find products by compatibility containing text
+     */
+    Page<Product> findByCompatibilityContainingIgnoreCaseAndActiveTrue(String compatibility, Pageable pageable);
+    
+    /**
+     * Find products by connection type
+     */
+    Page<Product> findByConectionTypeAndActiveTrue(String conectionType, Pageable pageable);
+    
+    /**
+     * Find products with discount > 0
+     */
+    Page<Product> findByDiscountGreaterThanAndActiveTrue(Double discount, Pageable pageable);
+    
+    /**
+     * Count total active products
+     */
+    long countByActiveTrue();
+    
+    /**
+     * Count products by category
+     */
+    long countByCategoryAndActiveTrue(Category category);
 }

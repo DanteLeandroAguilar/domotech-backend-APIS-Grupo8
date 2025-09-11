@@ -13,41 +13,49 @@ public interface ImagenProductoService {
      * @param file Image file
      * @param productId ID of the product that owns the image
      * @param isPrincipal If this is the main product image
-     * @return Created ImagenProducto
+     * @return Created ProductImage
      */
-    public ProductImage uploadImage(MultipartFile file, Long productId, Boolean isPrincipal) throws IOException;
+    ProductImage uploadImage(MultipartFile file, Long productId, Boolean isPrincipal) throws IOException;
     
     /**
      * Get an image by its ID
      * @param id Image ID
-     * @return Found ImagenProducto
+     * @return Found ProductImage
      */
-    public ProductImage getImageById(Long id);
+    ProductImage getImageById(Long id);
     
     /**
      * Get all images for a product
      * @param productId Product ID
      * @return List of product images
      */
-    public List<ProductImage> getImagesByProduct(Long productId);
+    List<ProductImage> getImagesByProduct(Long productId);
     
     /**
      * Get the main image of a product
      * @param productId Product ID
-     * @return Main ImagenProducto or null if doesn't exist
+     * @return Main ProductImage or null if doesn't exist
      */
-    public ProductImage getPrincipalImage(Long productId);
+    ProductImage getPrincipalImage(Long productId);
     
     /**
      * Mark an image as principal (unmarks others from same product)
      * @param imageId ID of the image to mark as principal
-     * @return Updated ImagenProducto
+     * @return Updated ProductImage
      */
-    public ProductImage markAsPrincipal(Long imageId);
+    ProductImage markAsPrincipal(Long imageId);
     
     /**
      * Delete an image
      * @param id ID of the image to delete
      */
-    public void deleteImage(Long id);
+    void deleteImage(Long id);
+    
+    /**
+     * Update the URL of an image
+     * @param imageId ID of the image to update
+     * @param imageUrl New URL for the image
+     * @return Updated ProductImage
+     */
+    ProductImage updateImageUrl(Long imageId, String imageUrl);
 }
