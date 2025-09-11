@@ -187,11 +187,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * Update product stock (only SELLER users)
-     * PATCH /api/products/{id}/stock
-     * ACCESO: SOLO VENDEDOR (requiere JWT con rol SELLER)
-     */
+
     @PatchMapping("/{id}/stock")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ProductResponse> updateStock(
@@ -207,11 +203,7 @@ public class ProductController {
         }
     }
     
-    /**
-     * Apply discount to product (only SELLER users)
-     * PATCH /api/products/{id}/discount
-     * ACCESO: SOLO VENDEDOR (requiere JWT con rol SELLER)
-     */
+
     @PatchMapping("/{id}/discount")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ProductResponse> applyDiscount(
@@ -226,12 +218,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-    
-    /**
-     * Remove discount from product (only SELLER users)
-     * DELETE /api/products/{id}/discount
-     * ACCESO: SOLO VENDEDOR (requiere JWT con rol SELLER)
-     */
+
     @DeleteMapping("/{id}/discount")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ProductResponse> removeDiscount(@PathVariable Long id) {
@@ -243,12 +230,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-    
-    /**
-     * Delete product (only SELLER users)
-     * DELETE /api/products/{id}
-     * ACCESO: SOLO VENDEDOR (requiere JWT con rol SELLER)
-     */
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Map<String, String>> deleteProduct(@PathVariable Long id) {

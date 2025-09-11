@@ -12,6 +12,7 @@ import com.uade.tpo.demo.config.JwtService;
 import com.uade.tpo.demo.entity.User;
 import com.uade.tpo.demo.repository.UserRepository;
 import com.uade.tpo.demo.exceptions.UserAlreadyExistsException;
+import com.uade.tpo.demo.exceptions.InvalidInputException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,23 @@ public class AuthenticationService {
         private final AuthenticationManager authenticationManager;
 
         public AuthenticationResponse register(RegisterRequest request) {
+                // Validaciones de campos obligatorios
+                if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+                        throw new InvalidInputException("El username es obligatorio");
+                }
+                if (request.getFirstname() == null || request.getFirstname().trim().isEmpty()) {
+                        throw new InvalidInputException("El nombre es obligatorio");
+                }
+                if (request.getLastname() == null || request.getLastname().trim().isEmpty()) {
+                        throw new InvalidInputException("El apellido es obligatorio");
+                }
+                if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+                        throw new InvalidInputException("El email es obligatorio");
+                }
+                if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+                        throw new InvalidInputException("La contraseña es obligatoria");
+                }
+
                 // Validaciones de unicidad previas al guardado para evitar 500
                 if (repository.existsByEmail(request.getEmail())) {
                         throw new UserAlreadyExistsException("El email ya está registrado");
