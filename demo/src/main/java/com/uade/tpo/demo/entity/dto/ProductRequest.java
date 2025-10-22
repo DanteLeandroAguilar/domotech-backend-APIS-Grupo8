@@ -41,7 +41,7 @@ public class ProductRequest {
              message = "Connection type must be one of: WIFI, BLUETOOTH, ZIGBEE, ETHERNET, USB")
     private String conectionType; // WIFI, BLUETOOTH, ZIGBEE, etc.
     
-    private Boolean active = true;
+    private Boolean active;
     
     // Constructor vacío
     public ProductRequest() {}

@@ -142,6 +142,9 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setCategory(categoryOpt.get());
             }
         }
+        if(updatedProduct.getActive() != null){
+            existingProduct.setActive(updatedProduct.getActive());
+        }
         
         return productRepository.save(existingProduct);
     }
