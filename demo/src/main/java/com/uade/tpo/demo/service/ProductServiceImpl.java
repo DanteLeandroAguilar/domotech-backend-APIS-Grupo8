@@ -121,6 +121,12 @@ public class ProductServiceImpl implements ProductService {
             }
             existingProduct.setPrice(updatedProduct.getPrice());
         }
+        if(updatedProduct.getDiscount() != null){
+            if (updatedProduct.getDiscount() < 0 || updatedProduct.getDiscount() > 100) {
+                throw new RuntimeException("Discount must be between 0 and 100");
+            }
+            existingProduct.setDiscount(updatedProduct.getDiscount());
+        }
         if (updatedProduct.getBrand() != null) {
             existingProduct.setBrand(updatedProduct.getBrand());
         }

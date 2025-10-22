@@ -27,6 +27,12 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getLoggedUser() {
+        UserResponse user = userService.getLoggedUserResponse();
+        return ResponseEntity.ok(user);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
         UserResponse user = userService.updateUser(id, request);

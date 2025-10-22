@@ -22,4 +22,6 @@ public interface UserService {
     UserResponse updateUserRole(Long id, UserRoleUpdateRequest request);
 
     User getLoggedUser();
+
+    UserResponse getLoggedUserResponse();
 }

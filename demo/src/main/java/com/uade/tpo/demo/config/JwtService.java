@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import com.uade.tpo.demo.entity.User;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -23,18 +24,30 @@ public class JwtService {
     private long jwtExpiration;
 
     public String generateToken(
-            UserDetails userDetails) {
-        return buildToken(userDetails, jwtExpiration);
+            User user) {
+        return buildToken(user, jwtExpiration);
     }
 
     private String buildToken(
-            UserDetails userDetails,
+            User user,
             long expiration) {
+        String roleName = null;
+        try {
+            roleName = user.getRole().name();
+        } catch (ClassCastException ex) {
+            var auths = user.getAuthorities();
+            if (auths != null && !auths.isEmpty()) {
+                String first = auths.iterator().next().getAuthority();
+                roleName = first != null && first.startsWith("ROLE_") ? first.substring(5) : first;
+            }
+        }
+
         return Jwts
                 .builder()
-                .subject(userDetails.getUsername())
+                .subject(user.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
+                .claim("role", roleName)
                 .signWith(getSecretKey())
                 .compact();
     }

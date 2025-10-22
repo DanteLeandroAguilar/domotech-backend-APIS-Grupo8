@@ -136,10 +136,17 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(username).orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
     }
 
+    @Override
+    public UserResponse getLoggedUserResponse() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return convertToUserResponse(userRepository.findByEmail(username).orElseThrow(() -> new UserNotFoundException("Usuario no encontrado")));
+    }
+
     /**
      * Convierte una entidad User a UserResponse
      */
     private UserResponse convertToUserResponse(User user) {
+        System.out.println("USERRRRR: " + user.getUsername());
         UserResponse response = new UserResponse();
         response.setIdUser(user.getUserId());
         response.setUsername(user.getUsername());

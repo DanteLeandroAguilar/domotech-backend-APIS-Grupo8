@@ -49,7 +49,7 @@ public class AuthenticationService {
                 if (repository.existsByUsername(request.getUsername())) {
                         throw new UserAlreadyExistsException("El username ya está registrado");
                 }
-                var user = User.builder()
+                User user = User.builder()
                                 .username(request.getUsername())
                                 .name(request.getFirstname())
                                 .lastName(request.getLastname())

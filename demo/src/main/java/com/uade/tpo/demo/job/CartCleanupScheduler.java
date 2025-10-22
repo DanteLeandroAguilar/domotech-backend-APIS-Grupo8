@@ -16,7 +16,7 @@ public class CartCleanupScheduler {
     private CartService cartService;
     
 
-    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 0 */10 * * *")
     public void cleanupExpiredCarts() {
         logger.info("Iniciando limpieza de carritos vencidos...");
         
@@ -34,7 +34,7 @@ public class CartCleanupScheduler {
         }
     }
 
-    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "0 0 */10 * * *")
     public void deleteOldInactiveCarts() {
         logger.info("Iniciando eliminación de carritos inactivos antiguos (>30 días)...");
 
