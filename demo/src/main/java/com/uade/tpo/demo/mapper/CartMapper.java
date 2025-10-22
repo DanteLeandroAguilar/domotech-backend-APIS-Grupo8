@@ -30,7 +30,7 @@ public class CartMapper {
         itemDto.setProductName(item.getProduct().getName());
         itemDto.setAmount(item.getAmount());
         itemDto.setPrice(item.getProduct().getPrice());
+        itemDto.setDiscount(item.getProduct().getDiscount() != null ? item.getProduct().getDiscount() : 0.0);
         return itemDto;
     }
 }
-
