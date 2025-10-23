@@ -214,7 +214,7 @@ public class ProductServiceImpl implements ProductService {
                 filters.getSearchTerm(),
                 filters.getCompatibility(),
                 filters.getConnectionType(),
-                filters.getWithStock(),
+                true,
                 filters.getWithDiscount(),
                 pageable
         ).map(productMapper::toDto);
