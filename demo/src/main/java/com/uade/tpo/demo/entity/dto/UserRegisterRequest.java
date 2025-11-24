@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
+
 public class UserRegisterRequest {
     
     @NotBlank(message = "El nombre de usuario es obligatorio")
