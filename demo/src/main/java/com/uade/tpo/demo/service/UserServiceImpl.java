@@ -33,11 +33,11 @@ public class UserServiceImpl implements UserService {
     public UserResponse registerUser(UserRegisterRequest request) {
         // Verificar si el usuario ya existe
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new UserAlreadyExistsException("El nombre de usuario ya está en uso");
+            throw new UserAlreadyExistsException("El nombre de usuario ya estÃ¡ en uso");
         }
         
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("El email ya está registrado");
+            throw new UserAlreadyExistsException("El email ya estÃ¡ registrado");
         }
         
         // Crear nuevo usuario
@@ -59,13 +59,13 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOpt = userRepository.findByUsername(request.getUsername());
         
         if (userOpt.isEmpty()) {
-            throw new InvalidCredentialsException("Credenciales inválidas");
+            throw new InvalidCredentialsException("Credenciales invÃ¡lidas");
         }
         
         User user = userOpt.get();
         
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialsException("Credenciales inválidas");
+            throw new InvalidCredentialsException("Credenciales invÃ¡lidas");
         }
         
         return convertToUserResponse(user);
@@ -84,18 +84,18 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado con ID: " + id));
         
-        // Verificar si el nuevo username ya está en uso por otro usuario
+        // Verificar si el nuevo username ya estÃ¡ en uso por otro usuario
         if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
             if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-                throw new UserAlreadyExistsException("El nombre de usuario ya está en uso");
+                throw new UserAlreadyExistsException("El nombre de usuario ya estÃ¡ en uso");
             }
             user.setUsername(request.getUsername());
         }
         
-        // Verificar si el nuevo email ya está en uso por otro usuario
+        // Verificar si el nuevo email ya estÃ¡ en uso por otro usuario
         if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
             if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-                throw new UserAlreadyExistsException("El email ya está registrado");
+                throw new UserAlreadyExistsException("El email ya estÃ¡ registrado");
             }
             user.setEmail(request.getEmail());
         }
