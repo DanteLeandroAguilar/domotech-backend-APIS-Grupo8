@@ -11,5 +11,6 @@ public class OrderDetailResponseDTO {
     private double unitPrice;
     private double appliedDiscount;
     private double subtotal;
+    private String room;
 }
 

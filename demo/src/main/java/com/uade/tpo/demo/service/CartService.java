@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CartService {
 
-    CartResponseDTO updateProductAmount(Long idProduct, int amount);
+    CartResponseDTO updateProductAmount(Long idProduct, int amount, String room);
 
     Cart getActiveCartByLoggedUser();
 

@@ -11,6 +11,7 @@ public class CartItemResponseDTO {
     private double price;
     private double discount; // Porcentaje de descuento (0-100)
     private double finalPrice; // Precio final con descuento aplicado
+    private String room;
 
     /**
      * Calcula el precio final aplicando el descuento al precio base

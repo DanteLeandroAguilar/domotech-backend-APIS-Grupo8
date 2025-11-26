@@ -85,6 +85,12 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(GET, "/orders/me").hasRole("BUYER")
             .requestMatchers(PATCH, "/orders/*/status").hasRole("SELLER")
 
+            // Rooms: solo usuarios autenticados (BUYER)
+            .requestMatchers(GET, "/rooms").authenticated()
+            .requestMatchers(POST, "/rooms").authenticated()
+            .requestMatchers(PUT, "/rooms/**").authenticated()
+            .requestMatchers(DELETE, "/rooms/**").authenticated()
+
             // Todo lo demás, autenticado
             .anyRequest().authenticated()
         )

@@ -40,8 +40,12 @@ public class CartController {
     }
 
     @PatchMapping("/update-product")
-    public ResponseEntity<CartResponseDTO> updateProductAmount(@RequestParam Long idProduct, @RequestParam int amount) {
-        return ResponseEntity.ok(cartService.updateProductAmount(idProduct, amount));
+    public ResponseEntity<CartResponseDTO> updateProductAmount(
+            @RequestParam Long idProduct, 
+            @RequestParam int amount,
+            @RequestParam(required = false) String room) {
+        String normalizedRoom = (room == null || room.trim().isEmpty()) ? "general" : room.trim();
+        return ResponseEntity.ok(cartService.updateProductAmount(idProduct, amount, normalizedRoom));
     }
 
 }
