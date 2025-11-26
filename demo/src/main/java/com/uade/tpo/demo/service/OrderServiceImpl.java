@@ -50,7 +50,8 @@ public class OrderServiceImpl implements OrderService {
             }
             productService.decreaseStock(product.getProductId(), item.getAmount());
             double subtotal = (product.getPrice() - (product.getDiscount()/100)*product.getPrice()) * item.getAmount();
-            OrderDetail detail = new OrderDetail(product, item.getAmount(), product.getPrice(), product.getDiscount(), subtotal);
+            String room = item.getRoom() != null ? item.getRoom() : "general";
+            OrderDetail detail = new OrderDetail(product, item.getAmount(), product.getPrice(), product.getDiscount(), subtotal, room);
             total += detail.getSubtotal();
             details.add(detail);
             System.out.println("DETAIL" + detail.getProduct().getName());

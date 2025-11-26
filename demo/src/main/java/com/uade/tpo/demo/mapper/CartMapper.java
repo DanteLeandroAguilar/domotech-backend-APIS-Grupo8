@@ -31,6 +31,7 @@ public class CartMapper {
         itemDto.setAmount(item.getAmount());
         itemDto.setPrice(item.getProduct().getPrice());
         itemDto.setDiscount(item.getProduct().getDiscount() != null ? item.getProduct().getDiscount() : 0.0);
+        itemDto.setRoom(item.getRoom() != null ? item.getRoom() : "general");
         return itemDto;
     }
 }

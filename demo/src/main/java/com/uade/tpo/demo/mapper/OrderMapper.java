@@ -34,6 +34,7 @@ public class OrderMapper {
         detailDto.setUnitPrice(detail.getUnitPrice());
         detailDto.setAppliedDiscount(detail.getAppliedDiscount());
         detailDto.setSubtotal(detail.getSubtotal());
+        detailDto.setRoom(detail.getRoom() != null ? detail.getRoom() : "general");
         return detailDto;
     }
 }
