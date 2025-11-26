@@ -1,9 +1,11 @@
 package com.uade.tpo.demo.controllers;
 
 import com.uade.tpo.demo.entity.dto.OrderResponseDTO;
+import com.uade.tpo.demo.entity.dto.UpdateOrderStatusDTO;
 import com.uade.tpo.demo.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
@@ -30,5 +32,13 @@ public class OrderController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
         return orderService.getOrders(userId, startDate, endDate);
+    }
+
+    @PatchMapping("/{orderId}/status")
+    @PreAuthorize("hasRole('SELLER')")
+    public OrderResponseDTO updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestBody UpdateOrderStatusDTO updateOrderStatusDTO) {
+        return orderService.updateOrderStatus(orderId, updateOrderStatusDTO);
     }
 }

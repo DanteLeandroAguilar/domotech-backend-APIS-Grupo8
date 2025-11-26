@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.ArrayList;
 import com.uade.tpo.demo.mapper.OrderMapper;
 import com.uade.tpo.demo.entity.dto.OrderResponseDTO;
+import com.uade.tpo.demo.entity.dto.UpdateOrderStatusDTO;
+import com.uade.tpo.demo.exceptions.OrderNotFoundException;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -51,17 +53,19 @@ public class OrderServiceImpl implements OrderService {
             OrderDetail detail = new OrderDetail(product, item.getAmount(), product.getPrice(), product.getDiscount(), subtotal);
             total += detail.getSubtotal();
             details.add(detail);
+            System.out.println("DETAIL" + detail.getProduct().getName());
         }
         Order order = new Order();
         order.setUser(cart.getUser());
         order.setOrderDate(new Date());
         order.setTotal(total);
-        order.setOrderStatus(OrderStatus.CONFIRMED);
+        order.setOrderStatus(OrderStatus.PENDING);
         order = orderRepository.save(order);
         for (OrderDetail detail : details) {
             detail.setOrder(order);
         }
         orderDetailService.saveAllOrderDetails(details);
+        order.setOrderDetail(details);
         cartService.deactivateCart(cart.getCartId());
         return OrderMapper.toOrderResponseDTO(order);
     }
@@ -77,6 +81,18 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderResponseDTO> getOrders(Long userId, Date startDate, Date endDate) {
         List<Order> orders = orderRepository.findOrdersBy(userId, startDate, endDate);
         return orders.stream().map(OrderMapper::toOrderResponseDTO).toList();
+    }
+
+    @Override
+    @Transactional
+    public OrderResponseDTO updateOrderStatus(Long orderId, UpdateOrderStatusDTO updateOrderStatusDTO) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Orden no encontrada con ID: " + orderId));
+        
+        order.setOrderStatus(updateOrderStatusDTO.getOrderStatus());
+        order = orderRepository.save(order);
+        
+        return OrderMapper.toOrderResponseDTO(order);
     }
 }
 
