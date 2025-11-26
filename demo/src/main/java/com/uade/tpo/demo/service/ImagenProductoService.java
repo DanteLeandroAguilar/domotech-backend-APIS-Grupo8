@@ -1,6 +1,7 @@
 package com.uade.tpo.demo.service;
 
 import com.uade.tpo.demo.entity.ProductImage;
+import com.uade.tpo.demo.entity.dto.ProductResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,9 +14,9 @@ public interface ImagenProductoService {
      * @param file Image file
      * @param productId ID of the product that owns the image
      * @param isPrincipal If this is the main product image
-     * @return Created ProductImage
+     * @return ProductResponse with updated product information
      */
-    ProductImage uploadImage(MultipartFile file, Long productId, Boolean isPrincipal) throws IOException;
+    ProductResponse uploadImage(MultipartFile file, Long productId, Boolean isPrincipal) throws IOException;
     
     /**
      * Get an image by its ID
@@ -41,15 +42,16 @@ public interface ImagenProductoService {
     /**
      * Mark an image as principal (unmarks others from same product)
      * @param imageId ID of the image to mark as principal
-     * @return Updated ProductImage
+     * @return ProductResponse with updated product information
      */
-    ProductImage markAsPrincipal(Long imageId);
+    ProductResponse markAsPrincipal(Long imageId);
     
     /**
      * Delete an image
      * @param id ID of the image to delete
+     * @return ProductResponse with updated product information
      */
-    void deleteImage(Long id);
+    ProductResponse deleteImage(Long id);
     
     /**
      * Update the URL of an image

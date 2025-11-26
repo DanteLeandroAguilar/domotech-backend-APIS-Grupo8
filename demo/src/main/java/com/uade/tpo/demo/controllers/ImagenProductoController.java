@@ -1,6 +1,7 @@
 package com.uade.tpo.demo.controllers;
 
 import com.uade.tpo.demo.entity.dto.ProductImageResponse;
+import com.uade.tpo.demo.entity.dto.ProductResponse;
 import com.uade.tpo.demo.entity.ProductImage;
 import com.uade.tpo.demo.mapper.ProductImageMapper;
 import com.uade.tpo.demo.service.ImagenProductoService;
@@ -182,18 +183,9 @@ public class ImagenProductoController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
             
-            ProductImage savedImage = imagenProductoService.uploadImage(file, productId, isPrincipal);
+            ProductResponse productResponse = imagenProductoService.uploadImage(file, productId, isPrincipal);
             
-            // Generar URL para acceder a la imagen
-            String imageUrl = "/api/images/" + savedImage.getImageId() + "/download";
-            
-            // Actualizar en base de datos con la URL
-            savedImage = imagenProductoService.updateImageUrl(savedImage.getImageId(), imageUrl);
-            
-            // Convertir a DTO antes de devolver
-            ProductImageResponse response = productImageMapper.toResponse(savedImage);
-            
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
             
         } catch (IOException e) {
             Map<String, String> error = new HashMap<>();
@@ -218,15 +210,9 @@ public class ImagenProductoController {
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<?> markAsPrincipal(@PathVariable Long imageId) {
         try {
-            ProductImage updatedImage = imagenProductoService.markAsPrincipal(imageId);
-            ProductImageResponse response = productImageMapper.toResponse(updatedImage);
+            ProductResponse productResponse = imagenProductoService.markAsPrincipal(imageId);
             
-            Map<String, Object> successResponse = new HashMap<>();
-            successResponse.put("success", "Imagen marcada como principal exitosamente");
-            successResponse.put("message", "La imagen " + imageId + " ahora es la imagen principal del producto");
-            successResponse.put("image", response);
-            
-            return ResponseEntity.ok(successResponse);
+            return ResponseEntity.ok(productResponse);
             
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();
@@ -244,28 +230,17 @@ public class ImagenProductoController {
      */
     @DeleteMapping("/images/{imageId}")
     @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<Map<String, String>> deleteImage(@PathVariable Long imageId) {
+    public ResponseEntity<?> deleteImage(@PathVariable Long imageId) {
         try {
-            // Verificar si la imagen existe antes de eliminar
-            ProductImage image = imagenProductoService.getImageById(imageId);
-            String productName = image.getProduct() != null ? image.getProduct().getName() : "Unknown";
+            ProductResponse productResponse = imagenProductoService.deleteImage(imageId);
             
-            imagenProductoService.deleteImage(imageId);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("success", "Imagen eliminada exitosamente");
-            response.put("message", "La imagen del producto '" + productName + "' ha sido eliminada correctamente");
-            response.put("imageId", imageId.toString());
-            response.put("status", "DELETED");
-            
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(productResponse);
             
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Imagen no encontrada");
             error.put("message", "No existe una imagen con ID: " + imageId);
             error.put("imageId", imageId.toString());
-            error.put("status", "NOT_FOUND");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }

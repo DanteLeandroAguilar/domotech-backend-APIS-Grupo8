@@ -2,6 +2,8 @@ package com.uade.tpo.demo.service;
 
 import com.uade.tpo.demo.entity.ProductImage;
 import com.uade.tpo.demo.entity.Product;
+import com.uade.tpo.demo.entity.dto.ProductResponse;
+import com.uade.tpo.demo.mapper.ProductMapper;
 import com.uade.tpo.demo.repository.ImagenProductoRepository;
 import com.uade.tpo.demo.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +26,11 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
     @Autowired
     private ProductoRepository productoRepository;
     
+    @Autowired
+    private ProductMapper productMapper;
+    
     @Override
-    public ProductImage uploadImage(MultipartFile file, Long productId, Boolean isPrincipal) throws IOException {
+    public ProductResponse uploadImage(MultipartFile file, Long productId, Boolean isPrincipal) throws IOException {
         // Find the product
         Optional<Product> productOpt = productoRepository.findById(productId);
         if (!productOpt.isPresent()) {
@@ -56,7 +61,22 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
             throw new IOException("Error processing image", e);
         }
         
-        return imagenProductoRepository.save(newImage);
+        newImage = imagenProductoRepository.save(newImage);
+        
+        // Generate URL for the image
+        String imageUrl = "/api/images/" + newImage.getImageId() + "/download";
+        newImage.setImageUrl(imageUrl);
+        imagenProductoRepository.save(newImage);
+        
+        // Reload product with images to get updated state
+        Product updatedProduct = productoRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+        // Force load of images (lazy loading)
+        if (updatedProduct.getImages() != null) {
+            updatedProduct.getImages().size();
+        }
+        
+        return productMapper.toResponse(updatedProduct);
     }
     
     @Override
@@ -86,8 +106,9 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
     }
     
     @Override
-    public ProductImage markAsPrincipal(Long imageId) {
+    public ProductResponse markAsPrincipal(Long imageId) {
         ProductImage image = getImageById(imageId);
+        Long productId = image.getProduct().getProductId();
         
         // Unmark all images from same product as principal
         List<ProductImage> productImages = imagenProductoRepository.findByProduct(image.getProduct());
@@ -98,13 +119,35 @@ public class ImagenProductoServiceImpl implements ImagenProductoService {
         
         // Mark this image as principal
         image.setIsPrincipal(true);
-        return imagenProductoRepository.save(image);
+        imagenProductoRepository.save(image);
+        
+        // Reload product with images to get updated state
+        Product updatedProduct = productoRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+        // Force load of images (lazy loading)
+        if (updatedProduct.getImages() != null) {
+            updatedProduct.getImages().size();
+        }
+        
+        return productMapper.toResponse(updatedProduct);
     }
     
     @Override
-    public void deleteImage(Long id) {
+    public ProductResponse deleteImage(Long id) {
         ProductImage image = getImageById(id);
+        Long productId = image.getProduct().getProductId();
+        
         imagenProductoRepository.delete(image);
+        
+        // Reload product with images to get updated state
+        Product updatedProduct = productoRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+        // Force load of images (lazy loading)
+        if (updatedProduct.getImages() != null) {
+            updatedProduct.getImages().size();
+        }
+        
+        return productMapper.toResponse(updatedProduct);
     }
     
     @Override

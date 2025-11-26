@@ -145,6 +145,13 @@ public class ProductServiceImpl implements ProductService {
         if(updatedProduct.getActive() != null){
             existingProduct.setActive(updatedProduct.getActive());
         }
+
+        if(updatedProduct.getStock() != null){
+            existingProduct.setStock(updatedProduct.getStock());
+            if(updatedProduct.getStock() == 0){
+                existingProduct.setActive(false);
+            }
+        }
         
         return productRepository.save(existingProduct);
     }
