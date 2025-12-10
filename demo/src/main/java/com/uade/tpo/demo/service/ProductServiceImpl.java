@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@Transactional
+@Transactional // es atómica cada operación del servicio
 public class ProductServiceImpl implements ProductService {
     
     @Autowired
@@ -205,6 +205,18 @@ public class ProductServiceImpl implements ProductService {
                 throw new InsufficientStockException("Stock insuficiente para el producto: " + product.getName());
             }
             product.setStock(product.getStock() - cantidad);
+            productRepository.save(product);
+        } else {
+            throw new ProductNotFoundException("Producto no encontrado con ID: " + productId);
+        }
+    }
+
+    @Override
+    public void increaseStock(Long productId, int cantidad) {
+        Optional<Product> productOpt = productRepository.findById(productId);
+        if (productOpt.isPresent()) {
+            Product product = productOpt.get();
+            product.setStock(product.getStock() + cantidad);
             productRepository.save(product);
         } else {
             throw new ProductNotFoundException("Producto no encontrado con ID: " + productId);

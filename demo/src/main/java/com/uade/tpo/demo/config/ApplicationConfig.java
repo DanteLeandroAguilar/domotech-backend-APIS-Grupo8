@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class ApplicationConfig {
     private final UserRepository repository;
 
+    // busco el usuario por su username (email)
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> repository.findByEmail(username)
@@ -31,6 +32,7 @@ public class ApplicationConfig {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 
+    // funcion que ejecuta el proceso de autenticación
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();

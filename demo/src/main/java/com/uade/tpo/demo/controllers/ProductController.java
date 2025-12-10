@@ -131,16 +131,19 @@ public class ProductController {
      * POST /api/products
      * ACCESO: SOLO VENDEDOR (requiere JWT con rol SELLER)
      */
-    @PostMapping
-    @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request) {
+    @PostMapping // llamada HTTP POST a /api/products
+    @PreAuthorize("hasRole('SELLER')") // @RequestBody para mapear el JSON del cuerpo a ProductRequest
+    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductRequest request) {
         try {
-            Product product = productMapper.toEntity(request);
+            Product product = productMapper.toEntity(request); // mapeo DTO a entidad
             Product savedProduct = productService.createProduct(product);
             ProductResponse response = productMapper.toResponse(savedProduct);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Error al crear el producto");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
     
@@ -173,7 +176,7 @@ public class ProductController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<ProductResponse> updateProduct(
+    public ResponseEntity<?> updateProduct(
             @PathVariable Long id,
             @Valid @RequestBody ProductRequest request) {
         
@@ -183,7 +186,10 @@ public class ProductController {
             ProductResponse response = productMapper.toResponse(updatedProduct);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+              Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Error al actualizar el producto");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
     

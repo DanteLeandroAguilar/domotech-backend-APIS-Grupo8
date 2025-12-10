@@ -88,8 +88,23 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO updateOrderStatus(Long orderId, UpdateOrderStatusDTO updateOrderStatusDTO) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Orden no encontrada con ID: " + orderId));
-        
-        order.setOrderStatus(updateOrderStatusDTO.getOrderStatus());
+        OrderStatus previousStatus = order.getOrderStatus();
+        OrderStatus newStatus = updateOrderStatusDTO.getOrderStatus();
+       
+        // Si el pedido se cancela y no estaba cancelado antes, reingresar el stock
+        if (newStatus == OrderStatus.CANCELED && previousStatus != OrderStatus.CANCELED) {
+            List<OrderDetail> orderDetails = order.getOrderDetail();
+            if (orderDetails != null) {
+                for (OrderDetail detail : orderDetails) {
+                    productService.increaseStock(
+                        detail.getProduct().getProductId(),
+                        detail.getQuantity()
+                    );
+                }
+            }
+        }
+       
+        order.setOrderStatus(newStatus);
         order = orderRepository.save(order);
         
         return OrderMapper.toOrderResponseDTO(order);

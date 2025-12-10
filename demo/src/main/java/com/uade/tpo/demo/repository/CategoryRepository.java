@@ -28,5 +28,4 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     // Lista todas las categorías ordenadas por nombre descendente
     List<Category> findAllByOrderByNameDesc();
 
-
 }

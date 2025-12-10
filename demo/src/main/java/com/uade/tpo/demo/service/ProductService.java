@@ -33,4 +33,6 @@ public interface ProductService {
     void deleteProduct(Long id);
 
     void decreaseStock(Long productId, int cantidad);
+
+    void increaseStock(Long productId, int cantidad);
 }
