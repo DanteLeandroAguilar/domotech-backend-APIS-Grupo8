@@ -42,17 +42,25 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public CartResponseDTO updateProductAmount(Long idProducto, int cantidad) {
+    public CartResponseDTO updateProductAmount(Long idProducto, int cantidad, String room) {
         User usuario = userService.getLoggedUser();
         Cart cart = getOrCreateActiveCart(usuario.getUserId());
 
         if (!cart.getActive()) throw new CartNotFoundException("El carrito no está activo");
         Product product = productoRepository.findById(idProducto).orElseThrow(() -> new ProductNotFoundException("Producto no encontrado con ID: " + idProducto));
 
+        // Normalizar room: usar "general" si es null o vacío, y limitar longitud
+        String normalizedRoom = (room == null || room.trim().isEmpty()) ? "general" : room.trim();
+        if (normalizedRoom.length() > 50) {
+            normalizedRoom = normalizedRoom.substring(0, 50);
+        }
+
         List<CartItem> items = cart.getItems();
         CartItem found = null;
+        // Buscar por productId Y room (permite múltiples items del mismo producto en diferentes habitaciones)
         for (CartItem item : items) {
-            if (item.getProduct().getProductId().equals(idProducto)) {
+            if (item.getProduct().getProductId().equals(idProducto) && 
+                normalizedRoom.equals(item.getRoom() != null ? item.getRoom() : "general")) {
                 found = item;
                 break;
             }
@@ -71,6 +79,7 @@ public class CartServiceImpl implements CartService {
             newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setAmount(cantidad);
+            newItem.setRoom(normalizedRoom);
             cartItemRepository.save(newItem);
             items.add(newItem);
         }

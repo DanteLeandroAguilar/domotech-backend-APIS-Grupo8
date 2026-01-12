@@ -39,6 +39,9 @@ public class OrderDetail {
     @Column
     private Double subtotal; // (precioUnitario - descuento) * cantidad
 
+    @Column(length = 50)
+    private String room = "general";
+
     public OrderDetail() {}
 
     public OrderDetail(Product product, Integer quantity, Double unitPrice, Double appliedDiscount, Double subtotal) {
@@ -47,5 +50,15 @@ public class OrderDetail {
         this.unitPrice = unitPrice;
         this.appliedDiscount = appliedDiscount;
         this.subtotal = subtotal;
+        this.room = "general";
+    }
+
+    public OrderDetail(Product product, Integer quantity, Double unitPrice, Double appliedDiscount, Double subtotal, String room) {
+        this.product = product;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.appliedDiscount = appliedDiscount;
+        this.subtotal = subtotal;
+        this.room = room != null ? room : "general";
     }
 }
